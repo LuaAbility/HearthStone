@@ -1,7 +1,9 @@
-![LExtension2](https://user-images.githubusercontent.com/30228621/149660053-4de55627-18bb-4f79-a34a-a7df6c14dce1.png)
+![HearthStone](https://user-images.githubusercontent.com/30228621/149671572-26f5ca01-66fc-4dd8-b56a-0451b839be22.png)
+
 #### License
 이 애드온은 [**GNU General Public License v3.0**](https://www.gnu.org/licenses/gpl-3.0.en.html) 가 적용됩니다. 
 
 #### Description
-LExtension의 두번째 릴리즈입니다!\
-LA-EX-021 ~ LA-EX-040으로 구성된 20가지의 추가 능력들을 확인해보세요!
+**"아니 뭐 이런 거 다 잊어버리고, 그냥 재밌게 놀아보자고!"**\
+LAbility에 하스스톤의 하수인이 능력으로 추가됩니다!\
+추가되는 []가지의 특별한 능력으로 게임의 판도를 바꿔보세요!
