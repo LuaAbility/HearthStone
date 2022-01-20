@@ -1,0 +1,8 @@
+id: 'LA-HS-017-HIDDEN'
+type: '전염병'
+name: '오염된 피'
+rank: 'C'
+description: | 
+    3초마다 2의 데미지를 입습니다.
+    상대방을 타격 시 10% 확률로 전염됩니다.
+    
