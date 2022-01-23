@@ -2,6 +2,7 @@ local particle = import("$.Particle")
 local material = import("$.Material")
 
 function Init(abilityData)
+	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
 	plugin.registerEvent(abilityData, "HS002-abilityUse", "PlayerInteractEvent", 100)
 end
 
@@ -46,15 +47,20 @@ function abilityUse(LAPlayer, event, ability, id)
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 						local cost = LAPlayer:getVariable("HS002-cost")
 						local players = util.getTableFromList(game.getPlayers())
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs2.useline", 2, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs2.usebgm", 2, 1)
 						for i = 1, (cost * 3) do
 							util.runLater(function() 
 								local randomIndex = util.random(1, #players)
 								while players[randomIndex] == LAPlayer do randomIndex = util.random(1, #players) end
+								local ticks = players[randomIndex]:getPlayer():getMaximumNoDamageTicks()
+								players[randomIndex]:getPlayer():setMaximumNoDamageTicks(0)
 								players[randomIndex]:getPlayer():damage(2, event:getPlayer())
+								players[randomIndex]:getPlayer():setMaximumNoDamageTicks(ticks)
 								players[randomIndex]:getPlayer():getWorld():spawnParticle(import("$.Particle").REDSTONE, players[randomIndex]:getPlayer():getLocation():add(0,1,0), 300, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").PURPLE, 1}))
 								players[randomIndex]:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, players[randomIndex]:getPlayer():getLocation():add(0,1,0), 150, 0.2, 0.2, 0.2, 0.5)
-								players[randomIndex]:getPlayer():getWorld():playSound(players[randomIndex]:getPlayer():getLocation(), import("$.Sound").ENTITY_WITHER_SHOOT, 0.5, 1)
-							end, (i - 1) * 8)
+								players[randomIndex]:getPlayer():getWorld():playSound(players[randomIndex]:getPlayer():getLocation(), "hs2.hitsfx", 0.5, 1)
+							end, (i - 1) * 5)
 						end
 						
 						LAPlayer:setVariable("HS002-cost", 0)

@@ -2,6 +2,7 @@ local particle = import("$.Particle")
 local material = import("$.Material")
 
 function Init(abilityData)
+	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
 	plugin.registerEvent(abilityData, "HS003-abilityUse", "PlayerInteractEvent", 100)
 end
 
@@ -56,12 +57,14 @@ function abilityUse(LAPlayer, event, ability, id)
 						LAPlayer:setVariable("HS003-cost", LAPlayer:getVariable("HS003-cost") - LAPlayer:getVariable("HS003-requireCost"))
 						LAPlayer:setVariable("HS003-abilityTime", 200)
 						
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs3.useline", 2, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs3.usebgm", 2, 1)
+						
 						event:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, event:getPlayer():getLocation():add(0,1,0), 150, 0.2, 0.2, 0.2, 0.05)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), import("$.Sound").ENTITY_WITHER_IDLE, 0.5, 1)
 						
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do
-							if players[i] ~= LAPlayer then
+							if players[i]:getPlayer() ~= LAPlayer:getPlayer() then
 								local ability = util.getTableFromList(players[i]:getAbility())
 								util.runLater(function()
 									for j = 1, #ability do
@@ -90,13 +93,15 @@ function ResetAbility(player, ability)
 		end, 2)
 	end
 	
+	player:setVariable("HS003-abilities", { })
+	
 	game.sendMessage(player:getPlayer(), "§2[§a" .. ability.abilityName .. "§2] §a능력 시전 시간이 종료되었습니다.")
 	player:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, player:getPlayer():getLocation():add(0,1,0), 150, 0.2, 0.2, 0.2, 0.05)
-	player:getPlayer():getWorld():playSound(player:getPlayer():getLocation(), import("$.Sound").ENTITY_WITHER_IDLE, 0.5, 1.3)
+	player:getPlayer():getWorld():playSound(player:getPlayer():getLocation(), "hs1.endbgm", 2, 1)
 end
 
 function Reset(player, ability)
-	ResetAbility(player, ability)
+	if player:getVariable("HS003-abilityTime") > 0 then ResetAbility(player, ability) end
 end
 
 function addCost(player, ability)

@@ -2,6 +2,7 @@ local particle = import("$.Particle")
 local material = import("$.Material")
 
 function Init(abilityData)
+	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
 	plugin.registerEvent(abilityData, "HS001-abilityUse", "PlayerInteractEvent", 100)
 end
 
@@ -47,8 +48,7 @@ end
 
 function ResetTime(player)
 	if player:getVariable("HS001-cooldownMultiply") ~= nil then
-		player:getPlayer():getWorld():playSound(player:getPlayer():getLocation(), import("$.Sound").BLOCK_GLASS_BREAK, 2, 1.2)
-		player:getPlayer():getWorld():playSound(player:getPlayer():getLocation(), import("$.Sound").BLOCK_BELL_USE, 2, 1)
+		player:getPlayer():getWorld():playSound(player:getPlayer():getLocation(), "hs1.endbgm", 2, 1)
 		player:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, player:getPlayer():getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.9)
 		plugin.getPlugin().gameManager.cooldownMultiply = player:getVariable("HS001-cooldownMultiply")
 		player:removeVariable("HS001-cooldownMultiply")
@@ -70,8 +70,10 @@ function abilityUse(LAPlayer, event, ability, id)
 						LAPlayer:setVariable("HS001-cost", LAPlayer:getVariable("HS001-cost") - LAPlayer:getVariable("HS001-requireCost"))
 						LAPlayer:setVariable("HS001-halfTime", 1200)
 						if LAPlayer:getVariable("HS001-cooldownMultiply") == nil then LAPlayer:setVariable("HS001-cooldownMultiply", plugin.getPlugin().gameManager.cooldownMultiply) end
-						plugin.getPlugin().gameManager.cooldownMultiply = plugin.getPlugin().gameManager.cooldownMultiply / 2
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), import("$.Sound").BLOCK_BELL_USE, 2, 1)
+						plugin.getPlugin().gameManager.cooldownMultiply = plugin.getPlugin().gameManager.cooldownMultiply * 2
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs1.useline", 2, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs1.usebgm", 2, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs1.usesfx", 2, 1)
 						event:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, event:getPlayer():getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.9)
 						game.broadcastMessage("§6노즈도르무§e의 능력 발동으로 재사용 대기시간이 반으로 줄어듭니다!")
 					else

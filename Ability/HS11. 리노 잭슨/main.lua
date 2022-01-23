@@ -2,6 +2,7 @@ local particle = import("$.Particle")
 local material = import("$.Material")
 
 function Init(abilityData)
+	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
 	plugin.registerEvent(abilityData, "HS000-abilityUse", "PlayerInteractEvent", 100)
 end
 
