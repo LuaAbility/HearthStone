@@ -15,7 +15,7 @@ function onTimer(player, ability)
 	if player:getVariable("HS011-passiveCount") == nil then 
 		player:setVariable("HS011-passiveCount", 0) 
 		player:setVariable("HS011-cost", 0) 
-		player:setVariable("HS011-requireCost", 7) 
+		player:setVariable("HS011-requireCost", 6) 
 	end
 	
 	local str = "§1[§b마나 수정§1] §b"
@@ -58,8 +58,8 @@ function abilityUse(LAPlayer, event, ability, id)
 						if LAPlayer:getVariable("HS011-cost") >= LAPlayer:getVariable("HS011-requireCost") then
 							game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 							LAPlayer:setVariable("HS011-cost", LAPlayer:getVariable("HS011-cost") - LAPlayer:getVariable("HS011-requireCost"))
-							event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs11.useline", 1, 1)
-							event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs11.usebgm", 2, 1)
+							event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs11.useline", 0.5, 1)
+							event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs11.usebgm", 1, 1)
 							
 							for i = 0, 12 do
 								util.runLater(function() 

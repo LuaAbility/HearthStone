@@ -98,9 +98,9 @@ function abilityUse(LAPlayer, event, ability, id)
 						if abilityCount == 0 then 
 							game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c타겟할 플레이어가 없습니다.")
 						else 
-							event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs8.useline", 1, 1)
-							event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs8.usebgm", 2, 1)
-							event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs8.usesfx", 1, 1)
+							event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs8.useline", 0.5, 1)
+							event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs8.usebgm", 1, 1)
+							event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs8.usesfx", 0.5, 1)
 							game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 							LAPlayer:setVariable("HS008-cost", LAPlayer:getVariable("HS008-cost") - LAPlayer:getVariable("HS008-requireCost"))
 						end
@@ -114,8 +114,11 @@ function abilityUse(LAPlayer, event, ability, id)
 end
 
 function cancelAttack(LAPlayer, event, ability, id)
-	if event:getDamager():getType():toString() == "PLAYER" then
-		if game.checkCooldown(LAPlayer, game.getPlayer(event:getDamager()), ability, id) then
+	local damager = event:getDamager()
+	if event:getCause():toString() == "PROJECTILE" then damager = event:getDamager():getShooter() end
+	
+	if damager:getType():toString() == "PLAYER" then
+		if game.checkCooldown(LAPlayer, game.getPlayer(damager), ability, id) then
 			if not LAPlayer:getVariable("HS008-canAttack") then
 				event:setCancelled(true)
 			end

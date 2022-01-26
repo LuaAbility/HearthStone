@@ -1,5 +1,6 @@
 local particle = import("$.Particle")
 local material = import("$.Material")
+local types = import("$.entity.EntityType")
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
@@ -14,7 +15,7 @@ function onTimer(player, ability)
 	if player:getVariable("HS015-passiveCount") == nil then 
 		player:setVariable("HS015-passiveCount", 0) 
 		player:setVariable("HS015-cost", 0) 
-		player:setVariable("HS015-requireCost", 5) 
+		player:setVariable("HS015-requireCost", 7) 
 	end
 	
 	local str = "§1[§b마나 수정§1] §b"
@@ -27,7 +28,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS015-passiveCount")
-		if count >= 1 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 500 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -46,14 +47,12 @@ function abilityUse(LAPlayer, event, ability, id)
 					if LAPlayer:getVariable("HS015-cost") >= LAPlayer:getVariable("HS015-requireCost") then
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do
-							if not players[i]:getPlayer():isDead() and getLookingAt(event:getPlayer(), players[i]:getPlayer(), 0.99) then
+							if not players[i]:getPlayer():isDead() and getLookingAt(event:getPlayer(), players[i]:getPlayer(), 0.98) then
 								game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
-								event:getPlayer():getInventory():setContents(players[i]:getPlayer():getInventory():getContents())
-								event:getPlayer():getInventory():setExtraContents(players[i]:getPlayer():getInventory():getExtraContents())
-								event:getPlayer():getInventory():setArmorContents(players[i]:getPlayer():getInventory():getArmorContents())
-								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs15.usebgm", 1, 1)
-								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs15.useline", 2, 1)
+								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs15.usebgm", 0.5, 1)
+								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs15.useline", 1, 1)
 								LAPlayer:setVariable("HS015-cost", LAPlayer:getVariable("HS015-cost") - LAPlayer:getVariable("HS015-requireCost"))
+								drawLine(event:getPlayer(), players[i]:getPlayer())
 								return 0
 							end
 						end
@@ -89,4 +88,44 @@ function getLookingAt(player, player1, checkDouble)
 	if not player:hasLineOfSight(player1) then dot = 0 end
 	
 	return dot > checkDouble
+end
+
+function drawLine(player1, player2)
+	local armorStand = player2:getLocation():getWorld():spawnEntity(player2:getLocation(), types.ARMOR_STAND)
+	armorStand:setGravity(false)
+	armorStand:setVisible(false)
+	
+	local item = newInstance("$.inventory.ItemStack", {material.PLAYER_HEAD})
+	local sm = item:getItemMeta()
+	sm:setOwner(player2:getName())
+	item:setItemMeta(sm)
+
+	armorStand:getEquipment():setHelmet(item)
+	
+	local result = armorStand:getLocation():toVector()
+    for j = 0, 20 do
+		util.runLater(function()
+			local timeCount = j
+			local tempResult = result:clone()
+			local addVec = player1:getLocation():toVector():clone():subtract(tempResult:clone()):multiply(timeCount / 20)
+			
+			
+			tempResult:add(addVec)
+			armorStand:teleport(newInstance("$.Location", {armorStand:getWorld(), tempResult:getX(), tempResult:getY(), tempResult:getZ()}))
+			
+			armorStand:getWorld():spawnParticle(particle.REDSTONE, armorStand:getLocation():add(0,1,0), 20, 0.5, 0.5, 0.5, 0.9, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(222, 255, 255), 1.5 }))
+			armorStand:getWorld():spawnParticle(particle.REDSTONE, armorStand:getLocation():add(0,1,0), 20, 0.5, 0.5, 0.5, 0.9, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(255, 255, 255), 1.5 }))
+			armorStand:getWorld():spawnParticle(particle.ITEM_CRACK, armorStand:getLocation():add(0,1,0), 40, 0.5, 0.5, 0.5, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").SNOW_BLOCK}))
+		end, j)
+	end
+	
+	util.runLater(function() 
+		player1:getInventory():setContents(player2:getInventory():getContents())
+		player1:getInventory():setExtraContents(player2:getInventory():getExtraContents())
+		player1:getInventory():setArmorContents(player2:getInventory():getArmorContents())
+		
+		player1:getWorld():spawnParticle(particle.SPIT, player1:getLocation():add(0,1,0), 200, 0.5, 0.5, 0.5, 0.3)
+		player1:getWorld():spawnParticle(particle.ITEM_CRACK, player1:getLocation():add(0,1,0), 200, 0.5, 0.5, 0.5, 0.3, newInstance("$.inventory.ItemStack", {import("$.Material").SNOW_BLOCK}))
+		armorStand:remove()
+	end, 21)
 end

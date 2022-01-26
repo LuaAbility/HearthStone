@@ -30,7 +30,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS006-passiveCount")
-		if count >= 600 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 1000 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -58,12 +58,13 @@ function abilityUse(LAPlayer, event, ability, id)
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 						LAPlayer:setVariable("HS006-cost", LAPlayer:getVariable("HS006-cost") - LAPlayer:getVariable("HS006-requireCost"))
 						LAPlayer:setVariable("HS006-abilityTime", 1200)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs6.useline", 2, 1)
+						
 						
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do
 							if event:getPlayer():getWorld():getEnvironment() == players[i]:getPlayer():getPlayer():getWorld():getEnvironment() and 
 								(event:getPlayer():getLocation():distance(players[i]:getPlayer():getLocation()) <= 100) then
+								players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs6.useline", 1, 1)
 								game.sendMessage(players[i]:getPlayer(), "§4[§c" .. event:getPlayer():getName() .. "§4] §c종말이 다가온다!!")
 							end
 						end

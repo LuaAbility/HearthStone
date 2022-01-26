@@ -1,5 +1,6 @@
 local particle = import("$.Particle")
 local material = import("$.Material")
+local types = import("$.entity.EntityType")
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
@@ -9,7 +10,7 @@ end
 function onEvent(funcTable)
 	if funcTable[1] == "HS002-abilityUse" then abilityUse(funcTable[3], funcTable[2], funcTable[4], funcTable[1]) end
 end
-
+-- 아자리 불덩이
 function onTimer(player, ability)
 	if player:getVariable("HS002-passiveCount") == nil then 
 		player:setVariable("HS002-passiveCount", 0) 
@@ -47,19 +48,45 @@ function abilityUse(LAPlayer, event, ability, id)
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 						local cost = LAPlayer:getVariable("HS002-cost")
 						local players = util.getTableFromList(game.getPlayers())
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs2.useline", 2, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs2.usebgm", 2, 1)
+						for i = 1, #players do
+							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs2.useline", 1, 1)
+							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs2.usebgm", 1, 1)
+						end
+						
 						for i = 1, (cost * 3) do
 							util.runLater(function() 
+								if #players < 2 then return 0 end
 								local randomIndex = util.random(1, #players)
 								while players[randomIndex] == LAPlayer do randomIndex = util.random(1, #players) end
-								local ticks = players[randomIndex]:getPlayer():getMaximumNoDamageTicks()
-								players[randomIndex]:getPlayer():setMaximumNoDamageTicks(0)
-								players[randomIndex]:getPlayer():damage(2, event:getPlayer())
-								players[randomIndex]:getPlayer():setMaximumNoDamageTicks(ticks)
-								players[randomIndex]:getPlayer():getWorld():spawnParticle(import("$.Particle").REDSTONE, players[randomIndex]:getPlayer():getLocation():add(0,1,0), 300, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").PURPLE, 1}))
-								players[randomIndex]:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, players[randomIndex]:getPlayer():getLocation():add(0,1,0), 150, 0.2, 0.2, 0.2, 0.5)
-								players[randomIndex]:getPlayer():getWorld():playSound(players[randomIndex]:getPlayer():getLocation(), "hs2.hitsfx", 0.5, 1)
+								
+								local armorStand = players[randomIndex]:getPlayer():getWorld():spawnEntity(players[randomIndex]:getPlayer():getEyeLocation():add(0, 2, 0), types.ARMOR_STAND)
+								armorStand:setSmall(true)
+								armorStand:setGravity(false)
+								armorStand:setVisible(false)
+								local result = armorStand:getLocation():toVector()
+								for j = 0, 2 do
+									util.runLater(function()
+										local timeCount = j
+										local tempResult = result:clone()
+										local addVec = players[randomIndex]:getPlayer():getLocation():add(0, 0.5, 0):toVector():clone():subtract(tempResult:clone()):multiply(timeCount / 2)
+										
+										tempResult:add(addVec)
+										armorStand:teleport(newInstance("$.Location", {armorStand:getWorld(), tempResult:getX(), tempResult:getY(), tempResult:getZ()}))
+										
+										armorStand:getWorld():spawnParticle(particle.REDSTONE, armorStand:getLocation(), 50, 0.15, 0.5, 0.15, 0.05, newInstance("$.Particle$DustOptions", { import("$.Color").PURPLE, 1 }))
+										armorStand:getWorld():spawnParticle(particle.SMOKE_NORMAL, armorStand:getLocation(), 50, 0.2, 0.5, 0.2, 0.05)
+									end, j)
+								end
+								
+								util.runLater(function() 
+									local ticks = players[randomIndex]:getPlayer():getMaximumNoDamageTicks()
+									players[randomIndex]:getPlayer():getWorld():spawnParticle(particle.REDSTONE, players[randomIndex]:getPlayer():getLocation():add(0, 1, 0), 150, 0.3, 0.5, 0.3, 0.2, newInstance("$.Particle$DustOptions", { import("$.Color").PURPLE, 1 }))
+									players[randomIndex]:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, players[randomIndex]:getPlayer():getLocation():add(0, 1, 0), 100, 0.3, 0.5, 0.3, 0.2)
+									players[randomIndex]:getPlayer():setMaximumNoDamageTicks(0)
+									players[randomIndex]:getPlayer():damage(2, event:getPlayer())
+									players[randomIndex]:getPlayer():setMaximumNoDamageTicks(ticks)
+									players[randomIndex]:getPlayer():getWorld():playSound(players[randomIndex]:getPlayer():getLocation(), "hs2.hitsfx", 0.5, 1)
+								end, 4)
 							end, (i - 1) * 5)
 						end
 						

@@ -18,7 +18,7 @@ function onTimer(player, ability)
 	if player:getVariable("HS009-passiveCount") == nil then 
 		player:setVariable("HS009-passiveCount", 0) 
 		player:setVariable("HS009-cost", 0) 
-		player:setVariable("HS009-requireCost", 4) 
+		player:setVariable("HS009-requireCost", 9) 
 		player:setVariable("HS009-abilityTime", 0)
 	end
 	
@@ -32,7 +32,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS009-passiveCount")
-		if count >= 1 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 150 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -59,14 +59,15 @@ function abilityUse(LAPlayer, event, ability, id)
 					if LAPlayer:getVariable("HS009-cost") >= LAPlayer:getVariable("HS009-requireCost") then
 						LAPlayer:setVariable("HS009-cost", LAPlayer:getVariable("HS009-cost") - LAPlayer:getVariable("HS009-requireCost"))
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
+						event:getPlayer():getWorld():spawnParticle(particle.REDSTONE, event:getPlayer():getLocation():add(0, 1, 0), 300, 0.3, 0.5, 0.3, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").LIME, 1}))
 						local randomNumber = util.random(1, 3)
 						if randomNumber == 1 then nightmare(event:getPlayer())
 						elseif randomNumber == 2 then dream(event:getPlayer())
 						elseif randomNumber == 3 then allSleep(event:getPlayer())
 						else goodOmen(event:getPlayer()) end
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs9.useline", 1, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs9.usebgm", 2, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs9.usesfx", 1, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs9.useline", 0.5, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs9.usebgm", 1, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs9.usesfx", 0.5, 1)
 					else
 						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS009-requireCost") .. "개)")
 					end

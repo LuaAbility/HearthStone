@@ -14,7 +14,7 @@ function onTimer(player, ability)
 	if player:getVariable("HS019-passiveCount") == nil then 
 		player:setVariable("HS019-passiveCount", 0) 
 		player:setVariable("HS019-cost", 0) 
-		player:setVariable("HS019-requireCost", 5) 
+		player:setVariable("HS019-requireCost", 7) 
 	end
 	
 	local str = "§1[§b마나 수정§1] §b"
@@ -27,7 +27,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS019-passiveCount")
-		if count >= 600 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 420 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -46,8 +46,14 @@ function abilityUse(LAPlayer, event, ability, id)
 					if LAPlayer:getVariable("HS019-cost") >= LAPlayer:getVariable("HS019-requireCost") then
 						LAPlayer:setVariable("HS019-cost", LAPlayer:getVariable("HS019-cost") - LAPlayer:getVariable("HS019-requireCost"))
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs19.useline", 1, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs19.usebgm", 2, 1)
+						local players = util.getTableFromList(game.getPlayers())
+						for i = 1, #players do
+							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs19.useline", 1, 1)
+							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs19.usebgm", 1, 1)
+						end
+						for i = 0, 35 do
+							util.runLater(function() event:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, event:getPlayer():getLocation():add(0,1,0), 30, 0.3, 0.7, 0.3, 0.05) end, i)
+						end
 						util.runLater(function() hit(LAPlayer) end, 40)
 					else
 						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS019-requireCost") .. "개)")
@@ -70,6 +76,25 @@ function addCost(player, ability)
 	end
 end
 
+function circleEffect(loc, radius)
+    local location = loc:clone()
+    for i = 0, 60 do
+        local angle = 2 * math.pi * i / 60
+        local x = math.cos(angle) * radius
+        local z = math.sin(angle) * radius
+        location:add(x, 0, z)
+		location:getWorld():spawnParticle(particle.SMOKE_NORMAL, location, 2, 0.5, 0, 0.5, 0.2)
+		if radius > 5 then
+			location:getWorld():spawnParticle(particle.ITEM_CRACK, location, 5, 0.5, 0, 0.5, 0.2, newInstance("$.inventory.ItemStack", {import("$.Material").PURPLE_CONCRETE}))
+		end
+		location:getWorld():spawnParticle(particle.ITEM_CRACK, location, 5, 0.5, 0, 0.5, 0.2, newInstance("$.inventory.ItemStack", {import("$.Material").GRAY_CONCRETE}))
+		if util.random() < 0.1 then
+			location:getWorld():spawnParticle(particle.ITEM_CRACK, location, 10, 0.5, 0, 0.5, 0.2, newInstance("$.inventory.ItemStack", {import("$.Material").GLOWSTONE}))
+		end
+        location:subtract(x, 0, z)
+    end
+end
+
 function hit(player)
 	local doAgain = false
 	local players = util.getTableFromList(game.getPlayers())
@@ -77,9 +102,17 @@ function hit(player)
 		if players[i]:getPlayer() ~= player:getPlayer() then
 			players[i]:getPlayer():damage(4, player:getPlayer())
 			players[i]:getPlayer():getWorld():playSound(players[i]:getPlayer():getLocation(), "hs19.hitsfx", 1, 1)
+			players[i]:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, players[i]:getPlayer():getLocation():add(0,1,0), 100, 0.3, 0.7, 0.3, 0.05)
+			players[i]:getPlayer():getWorld():spawnParticle(particle.REDSTONE, players[i]:getPlayer():getLocation():add(0,1,0), 100, 0.3, 0.7, 0.3, 0.05, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(51, 0, 102), 1 }))
 			if players[i]:getPlayer():isDead() then doAgain = true end
 		end
 	end
 	
-	if doAgain then util.runLater(function() hit(player) end, 20) end
+	for i = 0, 7 do
+		util.runLater(function()
+			circleEffect(player:getPlayer():getLocation():add(0,1,0), i)
+		end, i)
+	end
+	
+	if doAgain then util.runLater(function() hit(player) end, 25) end
 end

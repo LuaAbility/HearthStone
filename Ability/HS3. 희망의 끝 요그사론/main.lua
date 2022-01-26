@@ -14,7 +14,7 @@ function onTimer(player, ability)
 	if player:getVariable("HS003-passiveCount") == nil then 
 		player:setVariable("HS003-passiveCount", 0) 
 		player:setVariable("HS003-cost", 0) 
-		player:setVariable("HS003-requireCost", 8) 
+		player:setVariable("HS003-requireCost", 10) 
 		player:setVariable("HS003-abilities", {}) 
 		player:setVariable("HS003-abilityTime", 0)
 	end
@@ -29,7 +29,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS003-passiveCount")
-		if count >= 600 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 240 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -56,11 +56,10 @@ function abilityUse(LAPlayer, event, ability, id)
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 						LAPlayer:setVariable("HS003-cost", LAPlayer:getVariable("HS003-cost") - LAPlayer:getVariable("HS003-requireCost"))
 						LAPlayer:setVariable("HS003-abilityTime", 200)
-						
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs3.useline", 2, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs3.usebgm", 2, 1)
-						
-						event:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, event:getPlayer():getLocation():add(0,1,0), 150, 0.2, 0.2, 0.2, 0.05)
+
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs3.useline", 1, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs3.usebgm", 1, 1)
+						event:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, event:getPlayer():getLocation():add(0,1,0), 300, 0.2, 0.2, 0.2, 0.05)
 						
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do

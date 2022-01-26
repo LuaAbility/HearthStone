@@ -27,7 +27,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS017-passiveCount")
-		if count >= 600 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 300 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -44,14 +44,20 @@ function abilityUse(LAPlayer, event, ability, id)
 		if game.isAbilityItem(item, "IRON_INGOT") then
 			if game.checkCooldown(LAPlayer, game.getPlayer(event:getDamager()), ability, id) then
 				if LAPlayer:getVariable("HS017-cost") >= LAPlayer:getVariable("HS017-requireCost") then
-					game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
+					game.sendMessage(event:getDamager(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 					LAPlayer:setVariable("HS017-cost", LAPlayer:getVariable("HS017-cost") - LAPlayer:getVariable("HS017-requireCost"))
-					event:getDamager():getWorld():playSound(event:getDamager():getLocation(), "hs17.useline", 1, 1)
-					event:getDamager():getWorld():playSound(event:getDamager():getLocation(), "hs17.usebgm", 2, 1)
-					util.runLater(function() game.addAbility(game.getPlayer(event:getEntity()), "LA-HS-017-HIDDEN") end, 1)
+					event:getDamager():getWorld():spawnParticle(particle.SMOKE_NORMAL, event:getDamager():getLocation():add(0,1,0), 100, 0.3, 0.5, 0.3, 0.1)
+					event:getDamager():getWorld():playSound(event:getDamager():getLocation(), "hs17.useline", 0.5, 1)
+					event:getDamager():getWorld():playSound(event:getDamager():getLocation(), "hs17.usebgm", 1, 1)
+					util.runLater(function() 
+						event:getEntity():getWorld():spawnParticle(particle.REDSTONE, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.9, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(139, 0, 0), 1.0 }))
+						event:getEntity():getWorld():spawnParticle(particle.ITEM_CRACK, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").COAL_BLOCK}))
+						event:getEntity():getWorld():spawnParticle(particle.ITEM_CRACK, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").REDSTONE_BLOCK}))
+						game.addAbility(game.getPlayer(event:getEntity()), "LA-HS-017-HIDDEN") 
+					end, 1)
 					game.sendMessage(event:getEntity(), "§4오염된 피§c에 감염되었습니다.")
 				else
-					game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS017-requireCost") .. "개)")
+					game.sendMessage(event:getDamager(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS017-requireCost") .. "개)")
 				end
 			end
 		end

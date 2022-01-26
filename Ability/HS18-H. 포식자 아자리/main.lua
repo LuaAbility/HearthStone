@@ -1,5 +1,6 @@
 local particle = import("$.Particle")
 local material = import("$.Material")
+local types = import("$.entity.EntityType")
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
@@ -27,7 +28,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS018-passiveCount")
-		if count >= 600 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 1200 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -46,13 +47,12 @@ function abilityUse(LAPlayer, event, ability, id)
 					if LAPlayer:getVariable("HS018-cost") >= LAPlayer:getVariable("HS018-requireCost") then
 						LAPlayer:setVariable("HS018-cost", LAPlayer:getVariable("HS018-cost") - LAPlayer:getVariable("HS018-requireCost"))
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs18.finaluseline", 1, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs18.finalusebgm", 2, 1)
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do
+							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs18.finaluseline", 1, 1)
+							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs18.finalusebgm", 1, 1)
 							if players[i]:getPlayer() ~= LAPlayer:getPlayer() then
-								players[i]:getPlayer():getInventory():clear()
-								players[i]:getPlayer():getWorld():playSound(players[i]:getPlayer():getLocation(), "hs18.hitsfx", 1, 1)
+								removeInventory(players[i]:getPlayer())
 							end
 						end
 					else
@@ -74,4 +74,47 @@ function addCost(player, ability)
 		player:getPlayer():playSound(player:getPlayer():getLocation(), import("$.Sound").ENTITY_EXPERIENCE_ORB_PICKUP, 0.5, 2)
 		player:getPlayer():spawnParticle(particle.ITEM_CRACK, player:getPlayer():getLocation():add(0,1,0), 50, 0.2, 0.5, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").DIAMOND_BLOCK}))
 	end
+end
+
+function removeInventory(target)
+	local armorStand = target:getWorld():spawnEntity(target:getEyeLocation():add(0, 8, 0), types.ARMOR_STAND)
+	armorStand:setSmall(true)
+	armorStand:setGravity(false)
+	armorStand:setVisible(false)
+	
+	local result = armorStand:getLocation():toVector()
+	
+	target:getWorld():playSound(target:getLocation(), "hs18.hitsfx", 1, 1)
+	for j = 0, 20 do
+		util.runLater(function()
+			armorStand:getWorld():spawnParticle(particle.REDSTONE, armorStand:getLocation(), 100, 0.4, 0.4, 0.4, 0.05, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(0, 102, 0), 1 }))
+			armorStand:getWorld():spawnParticle(particle.SMOKE_NORMAL, armorStand:getLocation(), 50, 0.4, 0.4, 0.4, 0.05)
+			armorStand:getWorld():spawnParticle(particle.FLAME, armorStand:getLocation(), 20, 0.4, 0.4, 0.4, 0.05)
+		end, j)
+	end
+	
+	for j = 0, 20 do
+		util.runLater(function()
+			local timeCount = j
+			local tempResult = result:clone()
+			local addVec = target:getEyeLocation():toVector():clone():subtract(tempResult:clone()):multiply(timeCount / 20)
+			
+			tempResult:add(addVec)
+			armorStand:teleport(newInstance("$.Location", {armorStand:getWorld(), tempResult:getX(), tempResult:getY(), tempResult:getZ()}))
+			
+			armorStand:getWorld():spawnParticle(particle.ITEM_CRACK, armorStand:getLocation(), 50, 0.3, 0.3, 0.3, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").EMERALD_BLOCK}))
+			armorStand:getWorld():spawnParticle(particle.REDSTONE, armorStand:getLocation(), 100, 0.3, 0.3, 0.3, 0.05, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(0, 102, 0), 1 }))
+			armorStand:getWorld():spawnParticle(particle.SMOKE_NORMAL, armorStand:getLocation(), 50, 0.3, 0.3, 0.3, 0.05)
+			armorStand:getWorld():spawnParticle(particle.FLAME, armorStand:getLocation(), 20, 0.3, 0.3, 0.3, 0.05)
+		end, j + 20)
+	end
+	
+	util.runLater(function() 
+		target:getWorld():spawnParticle(particle.FLAME, target:getLocation(), 20, 0.3, 0.3, 0.3, 0.8)
+		target:getWorld():spawnParticle(particle.SMOKE_NORMAL, target:getLocation():add(0,1,0), 200, 0.2, 0.2, 0.2, 0.8)
+		target:getWorld():spawnParticle(particle.ITEM_CRACK, target:getLocation():add(0,1,0), 300, 0.4, 0.4, 0.4, 0.8, newInstance("$.inventory.ItemStack", {import("$.Material").EMERALD_BLOCK}))
+		target:getWorld():spawnParticle(particle.REDSTONE, target:getLocation():add(0,1,0), 400, 0.3, 0.3, 0.3, 0.05, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(0, 102, 0), 1 }))
+		target:getInventory():clear()
+		armorStand:remove()
+	end, 41)
 end

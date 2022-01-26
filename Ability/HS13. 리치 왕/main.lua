@@ -23,7 +23,7 @@ function onTimer(player, ability)
 	if player:getVariable("HS013-passiveCount") == nil then 
 		player:setVariable("HS013-passiveCount", 0) 
 		player:setVariable("HS013-cost", 0) 
-		player:setVariable("HS013-requireCost", 4) 
+		player:setVariable("HS013-requireCost", 8) 
 		player:setVariable("HS013-summonCount", 3) 
 	end
 	
@@ -37,7 +37,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS013-passiveCount")
-		if count >= 600 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 450 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -58,8 +58,8 @@ function abilityUse(LAPlayer, event, ability, id)
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 						local count = LAPlayer:getVariable("HS013-summonCount")
 						
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs13.useline", 2, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs13.usebgm", 2, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs13.useline", 1, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs13.usebgm", 1, 1)
 						effect(event:getPlayer())
 						for i = 1, 60 do
 							util.runLater(function()

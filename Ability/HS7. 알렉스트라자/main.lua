@@ -15,7 +15,7 @@ function onTimer(player, ability)
 	if player:getVariable("HS007-passiveCount") == nil then 
 		player:setVariable("HS007-passiveCount", 0) 
 		player:setVariable("HS007-cost", 0) 
-		player:setVariable("HS007-requireCost", 5) 
+		player:setVariable("HS007-requireCost", 9) 
 	end
 	
 	local str = "§1[§b마나 수정§1] §b"
@@ -28,7 +28,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS007-passiveCount")
-		if count >= 600 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 200 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -53,25 +53,25 @@ function abilityUse(LAPlayer, event, ability, id)
 								drawLine(event:getPlayer():getEyeLocation(), players[i]:getPlayer():getEyeLocation())
 								players[i]:getPlayer():setHealth(10)
 								players[i]:getPlayer():setFoodLevel(10)
-								players[i]:getPlayer():getWorld():spawnParticle(particle.REDSTONE, players[i]:getPlayer():getLocation():add(0, 1, 0), 100, 0.3, 0.5, 0.3, 0.05, dustOption)
-								players[i]:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, players[i]:getPlayer():getLocation():add(0, 1, 0), 100, 0.3, 0.5, 0.3, 0.05)
-								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.useline", 1, 1)
-								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.usebgm", 2, 1)
-								players[i]:getPlayer():getWorld():playSound(players[i]:getPlayer():getLocation(), "hs7.hitsfx", 1, 1)
+								players[i]:getPlayer():getWorld():spawnParticle(particle.REDSTONE, players[i]:getPlayer():getLocation():add(0, 1, 0), 300, 0.3, 0.5, 0.3, 0.05, dustOption)
+								players[i]:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, players[i]:getPlayer():getLocation():add(0, 1, 0), 300, 0.3, 0.5, 0.3, 0.05)
+								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.useline", 0.5, 1)
+								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.usebgm", 1, 1)
+								players[i]:getPlayer():getWorld():playSound(players[i]:getPlayer():getLocation(), "hs7.hitsfx", 0.5, 1)
 								return 0
 							end
 						end
 						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c타겟할 플레이어가 없습니다.")
 					elseif event:getAction():toString() == "LEFT_CLICK_AIR" or event:getAction():toString() == "LEFT_CLICK_BLOCK" then
 						LAPlayer:setVariable("HS007-cost", LAPlayer:getVariable("HS007-cost") - LAPlayer:getVariable("HS007-requireCost"))
-						event:getPlayer():getWorld():spawnParticle(particle.REDSTONE, event:getPlayer():getLocation():add(0, 1, 0), 100, 0.3, 0.5, 0.3, 0.05, dustOption)
-						event:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, event:getPlayer():getLocation():add(0, 1, 0), 100, 0.3, 0.5, 0.3, 0.05)
+						event:getPlayer():getWorld():spawnParticle(particle.REDSTONE, event:getPlayer():getLocation():add(0, 1, 0), 300, 0.3, 0.5, 0.3, 0.05, dustOption)
+						event:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, event:getPlayer():getLocation():add(0, 1, 0), 300, 0.3, 0.5, 0.3, 0.05)
 						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), import("$.Sound").ENTITY_BLAZE_SHOOT, 0.5, 1.2)
 						event:getPlayer():setHealth(10)
 						event:getPlayer():setFoodLevel(10)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.useline", 1, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.usebgm", 2, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.hitsfx", 1, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.useline", 0.5, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.usebgm", 1, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.hitsfx", 0.5, 1)
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 					end
 				else
@@ -104,6 +104,7 @@ function drawLine(point1, point2)
 		local loc = newInstance("$.Location", { world, p1:getX(), p1:getY(), p1:getZ() })
         world:spawnParticle(particle.REDSTONE, loc, 50, 0.25, 0.25, 0.25, 0.05, dustOption)
         world:spawnParticle(particle.SMOKE_NORMAL, loc, 50, 0.25, 0.25, 0.25, 0.05)
+        world:spawnParticle(particle.FLAME, loc, 50, 0.25, 0.25, 0.25, 0.05)
 		p1:add(vector)
     end
 end

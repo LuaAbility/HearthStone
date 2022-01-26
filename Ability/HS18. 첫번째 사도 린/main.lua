@@ -14,7 +14,7 @@ function onTimer(player, ability)
 	if player:getVariable("HS018-passiveCount") == nil then 
 		player:setVariable("HS018-passiveCount", 0) 
 		player:setVariable("HS018-cost", 0) 
-		player:setVariable("HS018-requireCost", 5) 
+		player:setVariable("HS018-requireCost", 6) 
 		player:setVariable("HS018-abilityCount", 0) 
 	end
 	
@@ -28,7 +28,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS018-passiveCount")
-		if count >= 1 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 400 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -51,17 +51,28 @@ function abilityUse(LAPlayer, event, ability, id)
 						abilityCount = abilityCount + 1
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다. (사용 횟수 : " .. abilityCount .. "회)")
 						
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs18.useline", 1, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs18.usebgm", 2, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs18.useline", 0.5, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs18.usebgm", 1, 1)
 						LAPlayer:setVariable("HS018-abilityCount", abilityCount)
+						for j = 0, 60 do
+							util.runLater(function()
+								local multiply = (abilityCount * 0.5)
+								event:getPlayer():getWorld():spawnParticle(particle.REDSTONE, event:getPlayer():getLocation():add(0, 0.25, 0), 40 * multiply, multiply, 0.1, multiply, 0.05, newInstance("$.Particle$DustOptions", { import("$.Color").PURPLE, multiply }))
+								local smoke = particle.SMOKE_NORMAL
+								if abilityCount >= 4 then smoke = particle.SMOKE_LARGE end
+								event:getPlayer():getWorld():spawnParticle(smoke, event:getPlayer():getLocation():add(0, 0.25, 0), 20 * multiply, multiply, 0.1, multiply, 0.05)
+							end, j)
+						end
 						
 						if abilityCount >= 5 then
-							game.sendMessage(event:getPlayer(), "§2[§a" .. ability.abilityName .. "§2] §a능력을 5번 사용하여 능력이 변경됩니다.")
-							LAPlayer:setVariable("HS018-passiveCount", 0) 
-							LAPlayer:setVariable("HS018-cost", 0) 
-							LAPlayer:setVariable("HS018-requireCost", 10) 
-							LAPlayer:setVariable("HS018-abilityCount", 0) 
-							util.runLater(function() game.changeAbility(LAPlayer, ability, "LA-HS-018-HIDDEN", false) end, 1)
+							util.runLater(function()
+								game.sendMessage(event:getPlayer(), "§2[§a" .. ability.abilityName .. "§2] §a능력을 5번 사용하여 능력이 변경됩니다.")
+								LAPlayer:setVariable("HS018-passiveCount", 0) 
+								LAPlayer:setVariable("HS018-cost", 0) 
+								LAPlayer:setVariable("HS018-requireCost", 10) 
+								LAPlayer:setVariable("HS018-abilityCount", 0) 
+								util.runLater(function() game.changeAbility(LAPlayer, ability, "LA-HS-018-HIDDEN", false) end, 1)
+							end, 70)
 						end
 					else
 						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS018-requireCost") .. "개)")

@@ -1,5 +1,6 @@
 local particle = import("$.Particle")
 local material = import("$.Material")
+local circleDelay = 20
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
@@ -9,13 +10,13 @@ end
 function onEvent(funcTable)
 	if funcTable[1] == "HS001-abilityUse" then abilityUse(funcTable[3], funcTable[2], funcTable[4], funcTable[1]) end
 end
-
+ -- 모래 이펙트
 function onTimer(player, ability)
 	if player:getVariable("HS001-passiveCount") == nil then 
 		player:setVariable("HS001-passiveCount", 0) 
 		player:setVariable("HS001-halfTime", 0) 
 		player:setVariable("HS001-cost", 0) 
-		player:setVariable("HS001-requireCost", 10) 
+		player:setVariable("HS001-requireCost", 9) 
 	end
 	
 	local str = "§1[§b마나 수정§1] §b"
@@ -40,16 +41,21 @@ function onTimer(player, ability)
 	
 	local timeCount = player:getVariable("HS001-halfTime")
 	if timeCount > 0 then
+		circleEffect(player:getPlayer():getLocation(), timeCount % circleDelay)
 		timeCount = timeCount - 2
 		if timeCount <= 0 then ResetTime(player, ability) end
 		player:setVariable("HS001-halfTime", timeCount)
 	end
+	
 end
 
 function ResetTime(player)
 	if player:getVariable("HS001-cooldownMultiply") ~= nil then
-		player:getPlayer():getWorld():playSound(player:getPlayer():getLocation(), "hs1.endbgm", 2, 1)
-		player:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, player:getPlayer():getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.9)
+		player:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, player:getPlayer():getLocation():add(0,1,0), 500, 0.5, 1, 0.5, 0.9)
+		local players = util.getTableFromList(game.getPlayers())
+		for i = 1, #players do
+			players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs1.endbgm", 1, 1)
+		end
 		plugin.getPlugin().gameManager.cooldownMultiply = player:getVariable("HS001-cooldownMultiply")
 		player:removeVariable("HS001-cooldownMultiply")
 		game.broadcastMessage("§a재사용 대기시간이 원래대로 돌아옵니다.")
@@ -71,9 +77,14 @@ function abilityUse(LAPlayer, event, ability, id)
 						LAPlayer:setVariable("HS001-halfTime", 1200)
 						if LAPlayer:getVariable("HS001-cooldownMultiply") == nil then LAPlayer:setVariable("HS001-cooldownMultiply", plugin.getPlugin().gameManager.cooldownMultiply) end
 						plugin.getPlugin().gameManager.cooldownMultiply = plugin.getPlugin().gameManager.cooldownMultiply * 2
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs1.useline", 2, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs1.usebgm", 2, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs1.usesfx", 2, 1)
+						
+						local players = util.getTableFromList(game.getPlayers())
+						for i = 1, #players do
+							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs1.useline", 1, 1)
+							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs1.usebgm", 1, 1)
+							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs1.usesfx", 1, 1)
+						end
+						
 						event:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, event:getPlayer():getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.9)
 						game.broadcastMessage("§6노즈도르무§e의 능력 발동으로 재사용 대기시간이 반으로 줄어듭니다!")
 					else
@@ -95,4 +106,15 @@ function addCost(player, ability)
 		player:getPlayer():playSound(player:getPlayer():getLocation(), import("$.Sound").ENTITY_EXPERIENCE_ORB_PICKUP, 0.5, 2)
 		player:getPlayer():spawnParticle(particle.ITEM_CRACK, player:getPlayer():getLocation():add(0,1,0), 50, 0.2, 0.5, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").DIAMOND_BLOCK}))
 	end
+end
+
+function circleEffect(loc, count)
+    local location = loc:clone()
+	
+    local angle = 2 * math.pi * count / circleDelay
+    local x = math.cos(angle) * 0.5
+    local z = math.sin(angle) * 0.5
+    location:add(x, 0, z)
+	location:getWorld():spawnParticle(particle.ITEM_CRACK, location:add(0, 1.2, 0), 30, 0, 0, 0, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").SAND}))
+    location:subtract(x, 0, z)
 end

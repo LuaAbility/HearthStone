@@ -27,7 +27,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS012-passiveCount")
-		if count >= 1 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 720 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -48,8 +48,8 @@ function abilityUse(LAPlayer, event, ability, id)
 						LAPlayer:setVariable("HS012-cost", LAPlayer:getVariable("HS012-cost") - LAPlayer:getVariable("HS012-requireCost"))
 						randomAbility(LAPlayer)
 						
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs12.useline", 1, 1)
-						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs12.usebgm", 2, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs12.useline", 0.5, 1)
+						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs12.usebgm", 1, 1)
 					else
 						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS012-requireCost") .. "개)")
 					end
