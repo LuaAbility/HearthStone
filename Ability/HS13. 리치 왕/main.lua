@@ -86,6 +86,8 @@ function abilityUse(LAPlayer, event, ability, id)
 										local newHealth = event:getPlayer():getHealth() + 4
 										if newHealth > maxHealth then newHealth = maxHealth end
 										event:getPlayer():setHealth(newHealth)
+										event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), import("$.Sound").ENTITY_STRAY_DEATH, 0.5, 1)
+										event:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, event:getPlayer():getLocation():add(0,1,0), 500, 0.5, 0.7, 0.5, 0.05)
 									end
 									if entity:isValid() then 
 										entity:getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, entity:getLocation():add(0,1,0), 1000, 0.5, 0.7, 0.5, 0.05)

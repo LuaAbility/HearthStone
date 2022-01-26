@@ -3,66 +3,47 @@ local material = import("$.Material")
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
-	plugin.registerEvent(abilityData, "HS000-abilityUse", "PlayerInteractEvent", 100)
+	plugin.registerEvent(abilityData, "HS016-cancelGetItem", "EntityPickupItemEvent", 0)
 end
 
 function onEvent(funcTable)
-	if funcTable[1] == "HS000-abilityUse" then abilityUse(funcTable[3], funcTable[2], funcTable[4], funcTable[1]) end
+	if funcTable[1] == "HS016-cancelGetItem" then cancelGetItem(funcTable[3], funcTable[2], funcTable[4], funcTable[1]) end
 end
 
 function onTimer(player, ability)
-	if player:getVariable("HS000-passiveCount") == nil then 
-		player:setVariable("HS000-passiveCount", 0) 
-		player:setVariable("HS000-cost", 0) 
-		player:setVariable("HS000-requireCost", 5) 
-	end
-	
-	local str = "§1[§b마나 수정§1] §b"
-	local cost = player:getVariable("HS000-cost")
-	for i = 1, 10 do
-		if i <= cost then str = str .. "●"
-		else str = str .. "○" end
-	end
-	game.sendActionBarMessage(player:getPlayer(), str)
-	
-	if cost < 10 then
-		local count = player:getVariable("HS000-passiveCount")
-		if count >= 600 * plugin.getPlugin().gameManager.cooldownMultiply then 
-			count = 0
-			addCost(player, ability)
-		end
-		count = count + 2
-		player:setVariable("HS000-passiveCount", count)
-	else 
-		player:setVariable("HS000-passiveCount", 0)
+	if player:getVariable("HS016-passiveCount") == nil then 
+		player:setVariable("HS016-passiveCount", 0)
+		util.runLater(function() giveitem(player:getPlayer()) end, 200)
 	end
 end
 
-function abilityUse(LAPlayer, event, ability, id)
-	if event:getAction():toString() == "RIGHT_CLICK_AIR" or event:getAction():toString() == "RIGHT_CLICK_BLOCK" then
-		if event:getItem() ~= nil then
-			if game.isAbilityItem(event:getItem(), "IRON_INGOT") then
-				if game.checkCooldown(LAPlayer, game.getPlayer(event:getPlayer()), ability, id, false) then
-					if LAPlayer:getVariable("HS000-cost") >= LAPlayer:getVariable("HS000-requireCost") then
-						LAPlayer:setVariable("HS000-cost", LAPlayer:getVariable("HS000-cost") - LAPlayer:getVariable("HS000-requireCost"))
-						game.sendMessage(event:getPlayer(), "§a테스트 완료!")
-					else
-						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS000-requireCost") .. "개)")
-					end
-				end
-			end
-		end
-	end
+function giveitem(player)
+	local startItem = {
+		newInstance("$.inventory.ItemStack", {material.DIAMOND_HELMET, 1}),
+		newInstance("$.inventory.ItemStack", {material.IRON_CHESTPLATE, 1}),
+		newInstance("$.inventory.ItemStack", {material.IRON_LEGGINGS, 1}),
+		newInstance("$.inventory.ItemStack", {material.DIAMOND_BOOTS, 1}),
+		newInstance("$.inventory.ItemStack", {material.IRON_INGOT, 64}),
+		newInstance("$.inventory.ItemStack", {material.GOLD_INGOT, 64}),
+		newInstance("$.inventory.ItemStack", {material.GOLDEN_CARROT, 64}),
+		newInstance("$.inventory.ItemStack", {material.OAK_LOG, 64}),
+		newInstance("$.inventory.ItemStack", {material.IRON_SHOVEL, 1}),
+		newInstance("$.inventory.ItemStack", {material.IRON_PICKAXE, 1}),
+		newInstance("$.inventory.ItemStack", {material.IRON_AXE, 1}),
+		newInstance("$.inventory.ItemStack", {material.IRON_SWORD, 1})
+	}
+	player:playSound(player:getLocation(), "hs16.usebgm", 1, 1)
+	player:playSound(player:getLocation(), "hs16.useline", 2, 1)
+	player:getInventory():clear()
+	player:getInventory():addItem(startItem)
+	player:giveExpLevels(-9999999)
+	player:giveExpLevels(300)
 end
 
-function addCost(player, ability)
-	local cost = player:getVariable("HS000-cost")
-	if cost == nil then player:setVariable("HS000-cost", 0) cost = 0 end
-	if cost < 10 then
-		cost = cost + 1
-		player:setVariable("HS000-cost", cost)
-		game.sendMessage(player:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b마나 수정이 생성되었습니다! (현재 마나 수정 : " .. player:getVariable("HS000-cost") .. "개)")
-		player:getPlayer():playSound(player:getPlayer():getLocation(), import("$.Sound").ENTITY_EXPERIENCE_ORB_PICKUP, 0.5, 2)
-		player:getPlayer():spawnParticle(particle.ITEM_CRACK, player:getPlayer():getLocation():add(0,1,0), 50, 0.2, 0.5, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").DIAMOND_BLOCK}))
+function cancelGetItem(LAPlayer, event, ability, id)
+	if event:getEntity():getType():toString() == "PLAYER" then
+		if game.checkCooldown(LAPlayer, game.getPlayer(event:getEntity()), ability, id) then
+			event:setCancelled(true)
+		end
 	end
 end

@@ -1,68 +1,98 @@
 local particle = import("$.Particle")
 local material = import("$.Material")
+local effect = import("$.potion.PotionEffectType")
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
-	plugin.registerEvent(abilityData, "HS000-abilityUse", "PlayerInteractEvent", 100)
+	plugin.registerEvent(abilityData, "HS014-abilityUse", "AbilityConfirmEvent", 200)
+	plugin.registerEvent(abilityData, "HS014-cancelAttack", "EntityDamageEvent", 0)
 end
 
 function onEvent(funcTable)
-	if funcTable[1] == "HS000-abilityUse" then abilityUse(funcTable[3], funcTable[2], funcTable[4], funcTable[1]) end
+	if funcTable[1] == "HS014-abilityUse" then abilityUse(funcTable[3], funcTable[2], funcTable[4], funcTable[1]) end
+	if funcTable[1] == "HS014-cancelAttack" and funcTable[2]:getEventName() == "EntityDamageByEntityEvent" then cancelAttack(funcTable[3], funcTable[2], funcTable[4], funcTable[1]) end
 end
 
 function onTimer(player, ability)
-	if player:getVariable("HS000-passiveCount") == nil then 
-		player:setVariable("HS000-passiveCount", 0) 
-		player:setVariable("HS000-cost", 0) 
-		player:setVariable("HS000-requireCost", 5) 
+	if player:getVariable("HS014-currentCandle") == nil then 
+		local candleCount = #util.getTableFromList(game.getPlayers())
+		player:setVariable("HS014-currentCandle", candleCount * 2)
 	end
 	
-	local str = "§1[§b마나 수정§1] §b"
-	local cost = player:getVariable("HS000-cost")
-	for i = 1, 10 do
-		if i <= cost then str = str .. "●"
-		else str = str .. "○" end
-	end
-	game.sendActionBarMessage(player:getPlayer(), str)
-	
-	if cost < 10 then
-		local count = player:getVariable("HS000-passiveCount")
-		if count >= 600 * plugin.getPlugin().gameManager.cooldownMultiply then 
-			count = 0
-			addCost(player, ability)
-		end
-		count = count + 2
-		player:setVariable("HS000-passiveCount", count)
+	local candle = player:getVariable("HS014-currentCandle")
+	if candle == 0 then
+		player:getPlayer():addPotionEffect(newInstance("$.potion.PotionEffect", {effect.INCREASE_DAMAGE, 10, 1}))
+		player:getPlayer():addPotionEffect(newInstance("$.potion.PotionEffect", {effect.DAMAGE_RESISTANCE, 10, 1}))
+		player:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, player:getPlayer():getLocation():add(0,1,0), 10, 0.3, 0.7, 0.3, 0.05)
 	else 
-		player:setVariable("HS000-passiveCount", 0)
+		game.sendActionBarMessage(player:getPlayer(), "§6[§e남은 양초§6] : §e" .. candle .. "개")
 	end
 end
 
 function abilityUse(LAPlayer, event, ability, id)
-	if event:getAction():toString() == "RIGHT_CLICK_AIR" or event:getAction():toString() == "RIGHT_CLICK_BLOCK" then
-		if event:getItem() ~= nil then
-			if game.isAbilityItem(event:getItem(), "IRON_INGOT") then
-				if game.checkCooldown(LAPlayer, game.getPlayer(event:getPlayer()), ability, id, false) then
-					if LAPlayer:getVariable("HS000-cost") >= LAPlayer:getVariable("HS000-requireCost") then
-						LAPlayer:setVariable("HS000-cost", LAPlayer:getVariable("HS000-cost") - LAPlayer:getVariable("HS000-requireCost"))
-						game.sendMessage(event:getPlayer(), "§a테스트 완료!")
-					else
-						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS000-requireCost") .. "개)")
-					end
-				end
+	local abilityUser = event:getPlayer():getPlayer()
+	if LAPlayer:getPlayer() ~= abilityUser and util.random() <= 0.333 then
+		local candle = LAPlayer:getVariable("HS014-currentCandle")
+		if candle ~= nil and candle > 0 then
+			if game.checkCooldown(LAPlayer, LAPlayer, ability, id, false, false) then
+				candle = candle - 1
+				
+				LAPlayer:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, LAPlayer:getPlayer():getLocation():add(0,1,0), 200, 0.3, 0.7, 0.3, 0.05)
+				LAPlayer:getPlayer():getWorld():playSound(LAPlayer:getPlayer():getLocation(), "hs14.triggerline", 0.5, 1)
+				LAPlayer:getPlayer():getWorld():playSound(LAPlayer:getPlayer():getLocation(), import("$.Sound").BLOCK_FIRE_EXTINGUISH, 1.5, 0.7)
+				game.sendMessage(LAPlayer:getPlayer(), "§7양초가 꺼졌습니다. (남은 양초 : " .. candle .. "개)")
+				
+				
+				abilityUser:getWorld():playSound(abilityUser:getLocation(), "hs14.triggerline", 0.5, 1)
+				abilityUser:getWorld():playSound(abilityUser:getLocation(), import("$.Sound").BLOCK_FIRE_EXTINGUISH, 1.5, 0.7)
+				game.sendMessage(abilityUser, "§7당신의 능력 발동으로 인해 §8양초 1개§7가 꺼졌습니다.")
+				
+				util.runLater(function() 
+					if candle <= 0 then revive(LAPlayer:getPlayer()) end
+					LAPlayer:setVariable("HS014-currentCandle", candle)
+				end, 60)
 			end
 		end
 	end
 end
 
-function addCost(player, ability)
-	local cost = player:getVariable("HS000-cost")
-	if cost == nil then player:setVariable("HS000-cost", 0) cost = 0 end
-	if cost < 10 then
-		cost = cost + 1
-		player:setVariable("HS000-cost", cost)
-		game.sendMessage(player:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b마나 수정이 생성되었습니다! (현재 마나 수정 : " .. player:getVariable("HS000-cost") .. "개)")
-		player:getPlayer():playSound(player:getPlayer():getLocation(), import("$.Sound").ENTITY_EXPERIENCE_ORB_PICKUP, 0.5, 2)
-		player:getPlayer():spawnParticle(particle.ITEM_CRACK, player:getPlayer():getLocation():add(0,1,0), 50, 0.2, 0.5, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").DIAMOND_BLOCK}))
+function revive(player)
+	game.broadcastMessage("§8어둠의 존재§7가 깨어납니다.")
+	player:getWorld():playSound(player:getLocation(), "hs14.usebgm", 1, 1)
+	player:getWorld():playSound(player:getLocation(), "hs14.useline", 2, 1)
+	
+	for i = 1, 35 do
+		util.runLater(function()
+			player:getWorld():spawnParticle(particle.SMOKE_NORMAL, player:getLocation():add(0,1,0), 50, 0.3, 0.7, 0.3, 0.05)
+		end, i)
 	end
+	
+	for i = 0, 20 do
+		util.runLater(function()
+			circleEffect(player:getLocation():add(0,1,0), ((i * 0.5) + 1))
+		end, i + 40) 
+	end
+end
+
+function cancelAttack(LAPlayer, event, ability, id)
+	if event:getDamager():getType():toString() == "PLAYER" then
+		if game.checkCooldown(LAPlayer, game.getPlayer(event:getDamager()), ability, id, false, false) then
+			if LAPlayer:getVariable("HS014-currentCandle") > 0 then
+				event:setCancelled(true)
+			end
+		end
+	end
+end
+
+function circleEffect(loc, radius)
+    local location = loc:clone()
+    for i = 0, 90 do
+        local angle = 2 * math.pi * i / 90
+        local x = math.cos(angle) * radius
+        local z = math.sin(angle) * radius
+        location:add(x, 0, z)
+		location:getWorld():spawnParticle(particle.SMOKE_LARGE, location, 5, 0.5, 0, 0.5, 0.1)
+		location:getWorld():spawnParticle(particle.REDSTONE, location, 10, 0.5, 0, 0.5, 0.9, newInstance("$.Particle$DustOptions", { import("$.Color").BLACK, 1.5 }))
+        location:subtract(x, 0, z)
+    end
 end

@@ -32,7 +32,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS009-passiveCount")
-		if count >= 600 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 1 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
@@ -163,8 +163,10 @@ end
 
 function cancelDamage(LAPlayer, event, ability, id)
 	if event:getEntity():getType():toString() == "PLAYER" then
-		if game.checkCooldown(LAPlayer, game.getPlayer(event:getEntity()), ability, id) and LAPlayer:getVariable("HS009-abilityTime") > 0 then
-			event:setCancelled(true)
+		if LAPlayer:getVariable("HS009-abilityTime") > 0 then
+			if game.checkCooldown(LAPlayer, game.getPlayer(event:getEntity()), ability, id) then
+				event:setCancelled(true)
+			end
 		end
 	end
 end
