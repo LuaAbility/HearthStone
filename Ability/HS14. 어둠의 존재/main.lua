@@ -56,7 +56,7 @@ function abilityUse(LAPlayer, event, ability, id)
 end
 
 function revive(player)
-	game.broadcastMessage("§8어둠의 존재§7가 깨어납니다.")3
+	game.broadcastMessage("§8어둠의 존재§7가 깨어납니다.")
 	local players = util.getTableFromList(game.getPlayers())
 	for i = 1, #players do
 		players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs14.useline", 1, 1)
