@@ -16,7 +16,7 @@ end
 function onTimer(player, ability)
 	if player:getVariable("HS014-currentCandle") == nil then 
 		local candleCount = #util.getTableFromList(game.getPlayers())
-		player:setVariable("HS014-currentCandle", 1)
+		player:setVariable("HS014-currentCandle", candleCount * 2)
 	end
 	
 	local candle = player:getVariable("HS014-currentCandle")

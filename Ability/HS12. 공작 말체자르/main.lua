@@ -82,19 +82,19 @@ function randomAbility(player)
 	for i = 1, abilityIndex do
 		util.runLater(function() 
 			game.addAbility(player, targetList[i]) 
-			player:getPlayer():spawnParticle(particle.PORTAL, player:getPlayer():getLocation():add(0,1,0), 1000, 0.1, 0.1, 0.1, 0.9)
+			player:getPlayer():getWorld():spawnParticle(particle.PORTAL, player:getPlayer():getLocation():add(0,1,0), 1000, 0.1, 0.1, 0.1, 0.9)
 		end, (i * 25) - 20)
 	end
 	
 	for i = 1, ((abilityIndex * 25) - 20) do
 		util.runLater(function() 
-			player:getPlayer():spawnParticle(particle.SMOKE_NORMAL, player:getPlayer():getLocation():add(0,1,0), 50, 0.5, 0.7, 0.5, 0.1) 
-			player:getPlayer():spawnParticle(particle.REDSTONE, player:getPlayer():getLocation():add(0,1,0), 20, 0.5, 0.7, 0.5, 0.1, newInstance("$.Particle$DustOptions", {import("$.Color").PURPLE, 1})) 
+			player:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, player:getPlayer():getLocation():add(0,1,0), 50, 0.5, 0.7, 0.5, 0.1) 
+			player:getPlayer():getWorld():spawnParticle(particle.REDSTONE, player:getPlayer():getLocation():add(0,1,0), 20, 0.5, 0.7, 0.5, 0.1, newInstance("$.Particle$DustOptions", {import("$.Color").PURPLE, 1})) 
 		end, i)
 	end
 	
 	util.runLater(function() 
-		player:getPlayer():spawnParticle(particle.SMOKE_NORMAL, player:getPlayer():getLocation():add(0,1,0), 750, 0.5, 0.7, 0.5, 0.5) 
+		player:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, player:getPlayer():getLocation():add(0,1,0), 750, 0.5, 0.7, 0.5, 0.5) 
 	end, ((abilityIndex + 1) * 25))
 	
 	util.runLater(function() game.removeAbilityAsID(player, "LA-HS-012") end, 2)
