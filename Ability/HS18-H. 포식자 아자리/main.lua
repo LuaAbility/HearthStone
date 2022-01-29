@@ -28,7 +28,7 @@ function onTimer(player, ability)
 	
 	if cost < 10 then
 		local count = player:getVariable("HS018-passiveCount")
-		if count >= 1200 * plugin.getPlugin().gameManager.cooldownMultiply then 
+		if count >= 600 * plugin.getPlugin().gameManager.cooldownMultiply then 
 			count = 0
 			addCost(player, ability)
 		end
