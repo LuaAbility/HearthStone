@@ -11,10 +11,11 @@ function onEvent(funcTable)
 end
 
 function onTimer(player, ability)
-	if player:getVariable("HS012-passiveCount") == nil then 
-		player:setVariable("HS012-passiveCount", 0) 
+	if player:getVariable("HS012-health") == nil then 
+		player:setVariable("HS012-health", player:getPlayer():getHealth()) 
+		player:setVariable("HS012-healthStack", 0) 
 		player:setVariable("HS012-cost", 0) 
-		player:setVariable("HS012-requireCost", 5) 
+		player:setVariable("HS012-requireCost", 2) 
 	end
 	
 	local str = "§1[§b마나 수정§1] §b"
@@ -26,15 +27,12 @@ function onTimer(player, ability)
 	game.sendActionBarMessage(player:getPlayer(), str)
 	
 	if cost < 10 then
-		local count = player:getVariable("HS012-passiveCount")
-		if count >= 720 * plugin.getPlugin().gameManager.cooldownMultiply then 
-			count = 0
+		if player:getVariable("HS012-health") < player:getPlayer():getHealth() then player:setVariable("HS012-health", player:getPlayer():getHealth()) end
+		local healthAmount = (player:getVariable("HS012-health") - player:getPlayer():getHealth()) + player:getVariable("HS012-healthStack")
+		
+		if healthAmount > 1 then
 			addCost(player, ability)
 		end
-		count = count + 2
-		player:setVariable("HS012-passiveCount", count)
-	else 
-		player:setVariable("HS012-passiveCount", 0)
 	end
 end
 
@@ -101,13 +99,34 @@ function randomAbility(player)
 end
 
 function addCost(player, ability)
-	local cost = player:getVariable("HS012-cost")
-	if cost == nil then player:setVariable("HS012-cost", 0) cost = 0 end
+	local prevCost = player:getVariable("HS012-cost")
+	local cost = prevCost
+	
 	if cost < 10 then
-		cost = cost + 1
-		player:setVariable("HS012-cost", cost)
-		game.sendMessage(player:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b마나 수정이 생성되었습니다! (현재 마나 수정 : " .. player:getVariable("HS012-cost") .. "개)")
-		player:getPlayer():playSound(player:getPlayer():getLocation(), import("$.Sound").ENTITY_EXPERIENCE_ORB_PICKUP, 0.5, 2)
-		player:getPlayer():spawnParticle(particle.ITEM_CRACK, player:getPlayer():getLocation():add(0,1,0), 50, 0.2, 0.5, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").DIAMOND_BLOCK}))
+		local healthAmount = (player:getVariable("HS012-health") - player:getPlayer():getHealth()) + player:getVariable("HS012-healthStack")
+		while cost <= 10 do
+			if cost <= 6 then
+				if (healthAmount - 2 >= 0) then
+					cost = cost + 1
+					healthAmount = healthAmount - 2
+				else break end
+			else
+				if (healthAmount - 4 >= 0) then
+					cost = cost + 1
+					healthAmount = healthAmount - 4
+				else break end
+			end
+		end
+		
+		if cost < 10 then player:setVariable("HS012-healthStack", healthAmount)
+		else player:setVariable("HS012-healthStack", 0) end
+		if (prevCost < cost) then
+			player:setVariable("HS012-health", player:getPlayer():getHealth())
+			player:setVariable("HS012-cost", cost)
+			
+			game.sendMessage(player:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b마나 수정이 생성되었습니다! (현재 마나 수정 : " .. cost .. "개)")
+			player:getPlayer():playSound(player:getPlayer():getLocation(), import("$.Sound").ENTITY_EXPERIENCE_ORB_PICKUP, 0.5, 2)
+			player:getPlayer():spawnParticle(particle.ITEM_CRACK, player:getPlayer():getLocation():add(0,1,0), 50, 0.2, 0.5, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").DIAMOND_BLOCK}))
+		end
 	end
 end

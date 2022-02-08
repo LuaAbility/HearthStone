@@ -13,8 +13,9 @@ function onEvent(funcTable)
 end
 
 function onTimer(player, ability)
-	if player:getVariable("HS005-passiveCount") == nil then 
-		player:setVariable("HS005-passiveCount", 0) 
+	if player:getVariable("HS005-health") == nil then 
+		player:setVariable("HS005-health", player:getPlayer():getHealth()) 
+		player:setVariable("HS005-healthStack", 0) 
 		player:setVariable("HS005-cost", 0) 
 		player:setVariable("HS005-requireCost", 3) 
 		player:setVariable("HS005-abilityTime", 0)
@@ -29,15 +30,12 @@ function onTimer(player, ability)
 	game.sendActionBarMessage(player:getPlayer(), str)
 	
 	if cost < 10 then
-		local count = player:getVariable("HS005-passiveCount")
-		if count >= 400 * plugin.getPlugin().gameManager.cooldownMultiply then 
-			count = 0
+		if player:getVariable("HS005-health") < player:getPlayer():getHealth() then player:setVariable("HS005-health", player:getPlayer():getHealth()) end
+		local healthAmount = (player:getVariable("HS005-health") - player:getPlayer():getHealth()) + player:getVariable("HS005-healthStack")
+		
+		if healthAmount > 1 then
 			addCost(player, ability)
 		end
-		count = count + 2
-		player:setVariable("HS005-passiveCount", count)
-	else 
-		player:setVariable("HS005-passiveCount", 0)
 	end
 	
 	local timeCount = player:getVariable("HS005-abilityTime")
@@ -62,10 +60,13 @@ function abilityUse(LAPlayer, event, ability, id)
 					if LAPlayer:getVariable("HS005-cost") >= LAPlayer:getVariable("HS005-requireCost") then
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 						LAPlayer:setVariable("HS005-cost", LAPlayer:getVariable("HS005-cost") - LAPlayer:getVariable("HS005-requireCost"))
-						LAPlayer:setVariable("HS005-health", event:getPlayer():getHealth() - 4)
+						LAPlayer:setVariable("HS005-prevHealth", event:getPlayer():getHealth() - 4)
 						LAPlayer:setVariable("HS005-abilityTime", 200)
 						
-						if event:getPlayer():getHealth() > 4 then event:getPlayer():setHealth(4) end
+						if event:getPlayer():getHealth() > 4 then 
+							event:getPlayer():setHealth(4) 
+							player:setVariable("HS005-health", 4) 
+						end
 						event:getPlayer():getAttribute(attribute.GENERIC_MAX_HEALTH):setBaseValue(4)
 						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs5.useline", 1, 1)
 					else
@@ -80,8 +81,8 @@ end
 function ResetHealth(player, ability)
 	game.sendMessage(player:getPlayer(), "§2[§a" .. ability.abilityName .. "§2] §a능력 시전 시간이 종료되었습니다.")
 	player:getPlayer():getAttribute(attribute.GENERIC_MAX_HEALTH):setBaseValue(player:getPlayer():getAttribute(attribute.GENERIC_MAX_HEALTH):getDefaultValue())
-	if player:getVariable("HS005-health") > 0 then 
-		local newHealth = player:getPlayer():getHealth() + player:getVariable("HS005-health")
+	if player:getVariable("HS005-prevHealth") > 0 then 
+		local newHealth = player:getPlayer():getHealth() + player:getVariable("HS005-prevHealth")
 		if newHealth > player:getPlayer():getAttribute(attribute.GENERIC_MAX_HEALTH):getDefaultValue() then newHealth = player:getPlayer():getAttribute(attribute.GENERIC_MAX_HEALTH):getDefaultValue() end
 		player:getPlayer():setHealth(newHealth) 
 	end
@@ -90,17 +91,38 @@ function ResetHealth(player, ability)
 end
 
 function Reset(player, ability)
-	if player:getVariable("HS005-abilityTime") > 0 then ResetHealth(player, ability) end
+	if player:getVariable("HS005-abilityTime") ~= nil and player:getVariable("HS005-abilityTime") > 0 then ResetHealth(player, ability) end
 end
 
 function addCost(player, ability)
-	local cost = player:getVariable("HS005-cost")
-	if cost == nil then player:setVariable("HS005-cost", 0) cost = 0 end
+	local prevCost = player:getVariable("HS005-cost")
+	local cost = prevCost
+	
 	if cost < 10 then
-		cost = cost + 1
-		player:setVariable("HS005-cost", cost)
-		game.sendMessage(player:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b마나 수정이 생성되었습니다! (현재 마나 수정 : " .. player:getVariable("HS005-cost") .. "개)")
-		player:getPlayer():playSound(player:getPlayer():getLocation(), import("$.Sound").ENTITY_EXPERIENCE_ORB_PICKUP, 0.5, 2)
-		player:getPlayer():spawnParticle(particle.ITEM_CRACK, player:getPlayer():getLocation():add(0,1,0), 50, 0.2, 0.5, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").DIAMOND_BLOCK}))
+		local healthAmount = (player:getVariable("HS005-health") - player:getPlayer():getHealth()) + player:getVariable("HS005-healthStack")
+		while cost <= 10 do
+			if cost <= 6 then
+				if (healthAmount - 2 >= 0) then
+					cost = cost + 1
+					healthAmount = healthAmount - 2
+				else break end
+			else
+				if (healthAmount - 4 >= 0) then
+					cost = cost + 1
+					healthAmount = healthAmount - 4
+				else break end
+			end
+		end
+		
+		if cost < 10 then player:setVariable("HS005-healthStack", healthAmount)
+		else player:setVariable("HS005-healthStack", 0) end
+		if (prevCost < cost) then
+			player:setVariable("HS005-health", player:getPlayer():getHealth())
+			player:setVariable("HS005-cost", cost)
+			
+			game.sendMessage(player:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b마나 수정이 생성되었습니다! (현재 마나 수정 : " .. cost .. "개)")
+			player:getPlayer():playSound(player:getPlayer():getLocation(), import("$.Sound").ENTITY_EXPERIENCE_ORB_PICKUP, 0.5, 2)
+			player:getPlayer():spawnParticle(particle.ITEM_CRACK, player:getPlayer():getLocation():add(0,1,0), 50, 0.2, 0.5, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").DIAMOND_BLOCK}))
+		end
 	end
 end
