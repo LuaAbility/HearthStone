@@ -93,6 +93,7 @@ function abilityUse(LAPlayer, event, ability, id)
 						end, 40)
 					else
 						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS004-requireCost") .. "개)")
+						ability:resetCooldown(id)
 					end
 				end
 			end

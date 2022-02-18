@@ -68,6 +68,7 @@ function abilityUse(LAPlayer, event, ability, id)
 						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs9.usesfx", 0.5, 1)
 					else
 						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS009-requireCost") .. "개)")
+						ability:resetCooldown(id)
 					end
 				end
 			elseif event:getItem():getType() == material.GREEN_DYE and event:getItem():getItemMeta():getDisplayName("§a꿈") then

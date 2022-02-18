@@ -87,6 +87,7 @@ function abilityUse(LAPlayer, event, ability, id)
 						game.broadcastMessage("§6노즈도르무§e의 능력 발동으로 재사용 대기시간이 반으로 줄어듭니다!")
 					else
 						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS001-requireCost") .. "개)")
+						ability:resetCooldown(id)
 					end
 				end
 			end
