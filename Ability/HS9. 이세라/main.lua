@@ -5,12 +5,12 @@ local effect = import("$.potion.PotionEffectType")
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
-	plugin.registerEvent(abilityData, "HS009-abilityUse", "PlayerInteractEvent", 100)
+	plugin.registerEvent(abilityData, "꿈", "PlayerInteractEvent", 100)
 	plugin.registerEvent(abilityData, "HS009-cancelDamage", "EntityDamageEvent", 0)
 end
 
 function onEvent(funcTable)
-	if funcTable[1] == "HS009-abilityUse" then abilityUse(funcTable[3], funcTable[2], funcTable[4], funcTable[1]) end
+	if funcTable[1] == "꿈" then abilityUse(funcTable[3], funcTable[2], funcTable[4], funcTable[1]) end
 	if funcTable[1] == "HS009-cancelDamage" then cancelDamage(funcTable[3], funcTable[2], funcTable[4], funcTable[1]) end
 end
 
@@ -53,7 +53,7 @@ function abilityUse(LAPlayer, event, ability, id)
 	if event:getAction():toString() == "RIGHT_CLICK_AIR" or event:getAction():toString() == "RIGHT_CLICK_BLOCK" then
 		if event:getItem() ~= nil then
 			if game.isAbilityItem(event:getItem(), "IRON_INGOT") then
-				if game.checkCooldown(LAPlayer, game.getPlayer(event:getPlayer()), ability, id, false) then
+				if game.checkCooldown(LAPlayer, game.getPlayer(event:getPlayer()), ability, id, false) and LAPlayer:getVariable("HS009-abilityTime") <= 0 then
 					if LAPlayer:getVariable("HS009-cost") >= LAPlayer:getVariable("HS009-requireCost") then
 						LAPlayer:setVariable("HS009-cost", LAPlayer:getVariable("HS009-cost") - LAPlayer:getVariable("HS009-requireCost"))
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
@@ -162,7 +162,7 @@ end
 
 function cancelDamage(LAPlayer, event, ability, id)
 	if event:getEntity():getType():toString() == "PLAYER" then
-		if LAPlayer:getVariable("HS009-abilityTime") > 0 then
+		if LAPlayer:getVariable("HS009-abilityTime") ~= nil and LAPlayer:getVariable("HS009-abilityTime") > 0 then
 			if game.checkCooldown(LAPlayer, game.getPlayer(event:getEntity()), ability, id) then
 				event:setCancelled(true)
 			end

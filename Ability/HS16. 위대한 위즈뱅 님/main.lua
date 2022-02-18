@@ -13,7 +13,7 @@ end
 function onTimer(player, ability)
 	if player:getVariable("HS016-passiveCount") == nil then 
 		player:setVariable("HS016-passiveCount", 0)
-		util.runLater(function() giveitem(player:getPlayer()) end, 200)
+		giveitem(player:getPlayer())
 	end
 end
 

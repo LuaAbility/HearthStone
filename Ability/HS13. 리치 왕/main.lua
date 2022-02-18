@@ -6,7 +6,7 @@ local effects = import("$.potion.PotionEffectType")
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
-	plugin.registerEvent(abilityData, "HS013-abilityUse", "PlayerInteractEvent", 100)
+	plugin.registerEvent(abilityData, "HS013-abilityUse", "PlayerInteractEvent", 600)
 	plugin.registerEvent(abilityData, "HS013-cancelTarget", "EntityTargetEvent", 0)
 	plugin.registerEvent(abilityData, "HS013-addStray", "PlayerDeathEvent", 0)
 	plugin.registerEvent(abilityData, "HS013-fireOff", "EntityCombustEvent", 0)

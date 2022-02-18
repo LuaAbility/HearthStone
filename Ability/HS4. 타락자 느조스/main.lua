@@ -4,7 +4,7 @@ local gameMode = import("$.GameMode")
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
-	plugin.registerEvent(abilityData, "HS004-abilityUse", "PlayerInteractEvent", 100)
+	plugin.registerEvent(abilityData, "HS004-abilityUse", "PlayerInteractEvent", 600)
 	plugin.registerEvent(abilityData, "HS004-cancelDamage", "EntityDamageEvent", 0)
 end
 

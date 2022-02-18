@@ -3,7 +3,7 @@ local material = import("$.Material")
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
-	plugin.registerEvent(abilityData, "HS006-abilityUse", "PlayerInteractEvent", 700)
+	plugin.registerEvent(abilityData, "HS006-abilityUse", "PlayerInteractEvent", 1200)
 	plugin.registerEvent(abilityData, "HS006-cancelAbility", "PlayerDeathEvent", 0)
 end
 

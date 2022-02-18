@@ -4,7 +4,7 @@ local circleDelay = 20
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
-	plugin.registerEvent(abilityData, "HS001-abilityUse", "PlayerInteractEvent", 100)
+	plugin.registerEvent(abilityData, "HS001-abilityUse", "PlayerInteractEvent", 0)
 end
 
 function onEvent(funcTable)
@@ -68,7 +68,7 @@ function abilityUse(LAPlayer, event, ability, id)
 	if event:getAction():toString() == "RIGHT_CLICK_AIR" or event:getAction():toString() == "RIGHT_CLICK_BLOCK" then
 		if event:getItem() ~= nil then
 			if game.isAbilityItem(event:getItem(), "IRON_INGOT") then
-				if game.checkCooldown(LAPlayer, game.getPlayer(event:getPlayer()), ability, id, false) then
+				if game.checkCooldown(LAPlayer, game.getPlayer(event:getPlayer()), ability, id, false) and LAPlayer:getVariable("HS001-halfTime") <= 0 then
 					if LAPlayer:getVariable("HS001-cost") >= LAPlayer:getVariable("HS001-requireCost") then
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 						LAPlayer:setVariable("HS001-cost", LAPlayer:getVariable("HS001-cost") - LAPlayer:getVariable("HS001-requireCost"))
