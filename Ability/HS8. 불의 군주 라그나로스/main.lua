@@ -4,7 +4,7 @@ local types = import("$.entity.EntityType")
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
-	plugin.registerEvent(abilityData, "HS008-abilityUse", "PlayerInteractEvent", 40)
+	plugin.registerEvent(abilityData, "HS008-abilityUse", "PlayerInteractEvent", 100)
 	plugin.registerEvent(abilityData, "HS008-cancelAttack", "EntityDamageEvent", 0)
 end
 
@@ -49,9 +49,9 @@ function abilityUse(LAPlayer, event, ability, id)
 						local players = util.getTableFromList(game.getPlayers())
 						local abilityCount = 0
 						for i = 1, #players do
-							if event:getPlayer() ~= players[i]:getPlayer() and not players[i]:getPlayer():isDead() then
+							if event:getPlayer() ~= players[i]:getPlayer() then
 								if event:getPlayer():getWorld():getEnvironment() == players[i]:getPlayer():getPlayer():getWorld():getEnvironment() and 
-									(event:getPlayer():getLocation():distance(players[i]:getPlayer():getLocation()) <= 8) then
+									(event:getPlayer():getLocation():distance(players[i]:getPlayer():getLocation()) <= 8) and game.targetPlayer(LAPlayer, players[i], false) then
 									util.runLater(function()
 										local armorStand = event:getPlayer():getWorld():spawnEntity(event:getPlayer():getEyeLocation():add(0, 4, 0), types.ARMOR_STAND)
 										armorStand:setSmall(true)

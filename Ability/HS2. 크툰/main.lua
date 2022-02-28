@@ -57,34 +57,36 @@ function abilityUse(LAPlayer, event, ability, id)
 								local randomIndex = util.random(1, #players)
 								while players[randomIndex] == LAPlayer do randomIndex = util.random(1, #players) end
 								
-								local armorStand = players[randomIndex]:getPlayer():getWorld():spawnEntity(players[randomIndex]:getPlayer():getEyeLocation():add(0, 2, 0), types.ARMOR_STAND)
-								armorStand:setSmall(true)
-								armorStand:setGravity(false)
-								armorStand:setVisible(false)
-								local result = armorStand:getLocation():toVector()
-								for j = 0, 2 do
-									util.runLater(function()
-										local timeCount = j
-										local tempResult = result:clone()
-										local addVec = players[randomIndex]:getPlayer():getLocation():add(0, 0.5, 0):toVector():clone():subtract(tempResult:clone()):multiply(timeCount / 2)
-										
-										tempResult:add(addVec)
-										armorStand:teleport(newInstance("$.Location", {armorStand:getWorld(), tempResult:getX(), tempResult:getY(), tempResult:getZ()}))
-										
-										armorStand:getWorld():spawnParticle(particle.REDSTONE, armorStand:getLocation(), 50, 0.15, 0.5, 0.15, 0.05, newInstance("$.Particle$DustOptions", { import("$.Color").PURPLE, 1 }))
-										armorStand:getWorld():spawnParticle(particle.SMOKE_NORMAL, armorStand:getLocation(), 50, 0.2, 0.5, 0.2, 0.05)
-									end, j)
+								if game.targetPlayer(LAPlayer, players[randomIndex], false) then
+									local armorStand = players[randomIndex]:getPlayer():getWorld():spawnEntity(players[randomIndex]:getPlayer():getEyeLocation():add(0, 2, 0), types.ARMOR_STAND)
+									armorStand:setSmall(true)
+									armorStand:setGravity(false)
+									armorStand:setVisible(false)
+									local result = armorStand:getLocation():toVector()
+									for j = 0, 2 do
+										util.runLater(function()
+											local timeCount = j
+											local tempResult = result:clone()
+											local addVec = players[randomIndex]:getPlayer():getLocation():add(0, 0.5, 0):toVector():clone():subtract(tempResult:clone()):multiply(timeCount / 2)
+											
+											tempResult:add(addVec)
+											armorStand:teleport(newInstance("$.Location", {armorStand:getWorld(), tempResult:getX(), tempResult:getY(), tempResult:getZ()}))
+											
+											armorStand:getWorld():spawnParticle(particle.REDSTONE, armorStand:getLocation(), 50, 0.15, 0.5, 0.15, 0.05, newInstance("$.Particle$DustOptions", { import("$.Color").PURPLE, 1 }))
+											armorStand:getWorld():spawnParticle(particle.SMOKE_NORMAL, armorStand:getLocation(), 50, 0.2, 0.5, 0.2, 0.05)
+										end, j)
+									end
+									
+									util.runLater(function() 
+										local ticks = players[randomIndex]:getPlayer():getMaximumNoDamageTicks()
+										players[randomIndex]:getPlayer():getWorld():spawnParticle(particle.REDSTONE, players[randomIndex]:getPlayer():getLocation():add(0, 1, 0), 150, 0.3, 0.5, 0.3, 0.2, newInstance("$.Particle$DustOptions", { import("$.Color").PURPLE, 1 }))
+										players[randomIndex]:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, players[randomIndex]:getPlayer():getLocation():add(0, 1, 0), 100, 0.3, 0.5, 0.3, 0.2)
+										players[randomIndex]:getPlayer():setMaximumNoDamageTicks(0)
+										players[randomIndex]:getPlayer():damage(2, event:getPlayer())
+										players[randomIndex]:getPlayer():setMaximumNoDamageTicks(ticks)
+										players[randomIndex]:getPlayer():getWorld():playSound(players[randomIndex]:getPlayer():getLocation(), "hs2.hitsfx", 0.5, 1)
+									end, 4)
 								end
-								
-								util.runLater(function() 
-									local ticks = players[randomIndex]:getPlayer():getMaximumNoDamageTicks()
-									players[randomIndex]:getPlayer():getWorld():spawnParticle(particle.REDSTONE, players[randomIndex]:getPlayer():getLocation():add(0, 1, 0), 150, 0.3, 0.5, 0.3, 0.2, newInstance("$.Particle$DustOptions", { import("$.Color").PURPLE, 1 }))
-									players[randomIndex]:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, players[randomIndex]:getPlayer():getLocation():add(0, 1, 0), 100, 0.3, 0.5, 0.3, 0.2)
-									players[randomIndex]:getPlayer():setMaximumNoDamageTicks(0)
-									players[randomIndex]:getPlayer():damage(2, event:getPlayer())
-									players[randomIndex]:getPlayer():setMaximumNoDamageTicks(ticks)
-									players[randomIndex]:getPlayer():getWorld():playSound(players[randomIndex]:getPlayer():getLocation(), "hs2.hitsfx", 0.5, 1)
-								end, 4)
 							end, (i - 1) * 5)
 						end
 						

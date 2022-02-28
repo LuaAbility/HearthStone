@@ -4,7 +4,7 @@ local effect = import("$.potion.PotionEffectType")
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
-	plugin.registerEvent(abilityData, "HS014-abilityUse", "AbilityConfirmEvent", 200)
+	plugin.registerEvent(abilityData, "HS014-abilityUse", "AbilityConfirmEvent", 100)
 	plugin.registerEvent(abilityData, "HS014-cancelAttack", "EntityDamageEvent", 0)
 end
 
@@ -16,7 +16,7 @@ end
 function onTimer(player, ability)
 	if player:getVariable("HS014-currentCandle") == nil then 
 		local candleCount = #util.getTableFromList(game.getPlayers())
-		player:setVariable("HS014-currentCandle", candleCount * 2)
+		player:setVariable("HS014-currentCandle", candleCount)
 	end
 	
 	local candle = player:getVariable("HS014-currentCandle")
@@ -31,7 +31,7 @@ end
 
 function abilityUse(LAPlayer, event, ability, id)
 	local abilityUser = event:getPlayer():getPlayer()
-	if LAPlayer:getPlayer() ~= abilityUser and util.random() <= 1 then
+	if LAPlayer:getPlayer() ~= abilityUser then
 		local candle = LAPlayer:getVariable("HS014-currentCandle")
 		if candle ~= nil and candle > 0 then
 			if game.checkCooldown(LAPlayer, LAPlayer, ability, id, false, false) then

@@ -47,10 +47,12 @@ function abilityUse(LAPlayer, event, ability, id)
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do
-							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs18.finaluseline", 1, 1)
-							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs18.finalusebgm", 1, 1)
-							if players[i]:getPlayer() ~= LAPlayer:getPlayer() then
-								removeInventory(players[i]:getPlayer())
+							if game.targetPlayer(LAPlayer, players[i], false) then
+								players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs18.finaluseline", 1, 1)
+								players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs18.finalusebgm", 1, 1)
+								if players[i]:getPlayer() ~= LAPlayer:getPlayer() then
+									removeInventory(players[i]:getPlayer())
+								end
 							end
 						end
 					else
@@ -70,14 +72,14 @@ function addCost(player, ability)
 		local healthAmount = (player:getVariable("HS018-health") - player:getPlayer():getHealth()) + player:getVariable("HS018-healthStack")
 		while cost <= 10 do
 			if cost <= 6 then
-				if (healthAmount - 2 >= 0) then
-					cost = cost + 1
-					healthAmount = healthAmount - 2
-				else break end
-			else
 				if (healthAmount - 4 >= 0) then
 					cost = cost + 1
 					healthAmount = healthAmount - 4
+				else break end
+			else
+				if (healthAmount - 6 >= 0) then
+					cost = cost + 1
+					healthAmount = healthAmount - 6
 				else break end
 			end
 		end

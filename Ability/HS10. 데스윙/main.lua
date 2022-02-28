@@ -93,7 +93,7 @@ function damage(player, ability)
 	
 	local players = util.getTableFromList(game.getPlayers())
 	for i = 1, #players do
-		if player:getPlayer() ~= players[i]:getPlayer() and not players[i]:getPlayer():isDead() and
+		if player:getPlayer() ~= players[i]:getPlayer() and game.targetPlayer(player, players[i], false) and
 			player:getPlayer():getWorld():getEnvironment() == players[i]:getPlayer():getPlayer():getWorld():getEnvironment() and 
 			(player:getPlayer():getLocation():distance(players[i]:getPlayer():getLocation()) <= 30) then
 			util.runLater(function()

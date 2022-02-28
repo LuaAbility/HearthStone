@@ -17,11 +17,13 @@ function abilityUse(LAPlayer, event, ability, id)
 			local randomIndex = util.random(1, #players)
 			while players[randomIndex]:getPlayer() == event:getEntity() do randomIndex = util.random(1, #players) end
 			
-			local loc = event:getEntity():getLocation():clone()
-			loc:setPitch(0)
-			loc:setYaw(0)
-			players[randomIndex]:getPlayer():teleport(loc)
-			event:getEntity():getWorld():playSound(event:getEntity():getLocation(), "hs20.useline", 1, 1)
+			if game.targetPlayer(LAPlayer, players[randomIndex], false) then
+				local loc = event:getEntity():getLocation():clone()
+				loc:setPitch(0)
+				loc:setYaw(0)
+				players[randomIndex]:getPlayer():teleport(loc)
+				event:getEntity():getWorld():playSound(event:getEntity():getLocation(), "hs20.useline", 1, 1)
+			end
 		end
 	end
 end

@@ -30,20 +30,26 @@ function giveitem(player)
 		newInstance("$.inventory.ItemStack", {material.IRON_SHOVEL, 1}),
 		newInstance("$.inventory.ItemStack", {material.IRON_PICKAXE, 1}),
 		newInstance("$.inventory.ItemStack", {material.IRON_AXE, 1}),
-		newInstance("$.inventory.ItemStack", {material.IRON_SWORD, 1})
+		newInstance("$.inventory.ItemStack", {material.IRON_SWORD, 1}),
+		newInstance("$.inventory.ItemStack", {material.FISHING_ROD, 1}),
+		newInstance("$.inventory.ItemStack", {material.BOW, 1}),
+		newInstance("$.inventory.ItemStack", {material.ARROW, 64}),
+		newInstance("$.inventory.ItemStack", {material.WATER_BUCKET, 1})
 	}
-	player:playSound(player:getLocation(), "hs16.usebgm", 1, 1)
-	player:playSound(player:getLocation(), "hs16.useline", 2, 1)
-	player:getInventory():clear()
-	player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").RED, 1}))
-	player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").ORANGE, 1}))
-	player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").YELLOW, 1}))
-	player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").GREEN, 1}))
-	player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").BLUE, 1}))
-	player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").PURPLE, 1}))
-	player:getInventory():addItem(startItem)
-	player:giveExpLevels(-9999999)
-	player:giveExpLevels(300)
+	util.runLater(function()
+		player:playSound(player:getLocation(), "hs16.usebgm", 1, 1)
+		player:playSound(player:getLocation(), "hs16.useline", 2, 1)
+		player:getInventory():clear()
+		player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").RED, 1}))
+		player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").ORANGE, 1}))
+		player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").YELLOW, 1}))
+		player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").GREEN, 1}))
+		player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").BLUE, 1}))
+		player:spawnParticle(import("$.Particle").REDSTONE, player:getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").PURPLE, 1}))
+		player:getInventory():addItem(startItem)
+		player:giveExpLevels(-9999999)
+		player:giveExpLevels(300)
+	end, 10)
 end
 
 function cancelGetItem(LAPlayer, event, ability, id)

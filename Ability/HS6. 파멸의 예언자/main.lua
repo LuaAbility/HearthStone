@@ -80,7 +80,7 @@ function Apocalypse(player)
 	local players = util.getTableFromList(game.getPlayers())
 	for i = 1, #players do
 		if player:getPlayer():getWorld():getEnvironment() == players[i]:getPlayer():getPlayer():getWorld():getEnvironment() and 
-			(player:getPlayer():getLocation():distance(players[i]:getPlayer():getLocation()) <= 100) then
+			(player:getPlayer():getLocation():distance(players[i]:getPlayer():getLocation()) <= 100) and game.targetPlayer(player, players[i], false) then
 			players[i]:getPlayer():getWorld():createExplosion(players[i]:getPlayer():getLocation(), 10)
 		end
 	end
@@ -108,7 +108,7 @@ function effect(player, timeCount)
 	local players = util.getTableFromList(game.getPlayers())
 	for i = 1, #players do
 		if player:getPlayer():getWorld():getEnvironment() == players[i]:getPlayer():getPlayer():getWorld():getEnvironment() and 
-			(player:getPlayer():getLocation():distance(players[i]:getPlayer():getLocation()) <= 100) then
+			(player:getPlayer():getLocation():distance(players[i]:getPlayer():getLocation()) <= 100) and game.targetPlayer(player, players[i], false) then
 			players[i]:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, players[i]:getPlayer():getLocation():add(0,1,0), 150, 0.3, 0.5, 0.3, 0.1)
 			players[i]:getPlayer():getWorld():playSound(players[i]:getPlayer():getLocation(), import("$.Sound").ITEM_FLINTANDSTEEL_USE, 0.5, 0.5 + (1.0 * ((1200 - timeCount) / 1200)))
 		end

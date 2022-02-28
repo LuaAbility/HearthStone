@@ -40,20 +40,34 @@ function abilityUse(LAPlayer, event, ability, id)
 	if event:getDamager():getType():toString() == "PLAYER" and event:getEntity():getType():toString() == "PLAYER" then
 		local item = event:getDamager():getInventory():getItemInMainHand()
 		if game.isAbilityItem(item, "IRON_INGOT") then
-			if game.checkCooldown(LAPlayer, game.getPlayer(event:getDamager()), ability, id) then
+			if game.checkCooldown(LAPlayer, game.getPlayer(event:getDamager()), ability, id, false) then
 				if LAPlayer:getVariable("HS017-cost") >= LAPlayer:getVariable("HS017-requireCost") then
-					game.sendMessage(event:getDamager(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
-					LAPlayer:setVariable("HS017-cost", LAPlayer:getVariable("HS017-cost") - LAPlayer:getVariable("HS017-requireCost"))
-					event:getDamager():getWorld():spawnParticle(particle.SMOKE_NORMAL, event:getDamager():getLocation():add(0,1,0), 100, 0.3, 0.5, 0.3, 0.1)
-					event:getDamager():getWorld():playSound(event:getDamager():getLocation(), "hs17.useline", 0.5, 1)
-					event:getDamager():getWorld():playSound(event:getDamager():getLocation(), "hs17.usebgm", 1, 1)
-					util.runLater(function() 
-						event:getEntity():getWorld():spawnParticle(particle.REDSTONE, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.9, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(139, 0, 0), 1.0 }))
-						event:getEntity():getWorld():spawnParticle(particle.ITEM_CRACK, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").COAL_BLOCK}))
-						event:getEntity():getWorld():spawnParticle(particle.ITEM_CRACK, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").REDSTONE_BLOCK}))
-						game.addAbility(game.getPlayer(event:getEntity()), "LA-HS-017-HIDDEN") 
-					end, 1)
-					game.sendMessage(event:getEntity(), "§4오염된 피§c에 감염되었습니다.")
+					if game.targetPlayer(LAPlayer, game.getPlayer(event:getEntity())) then
+						local ablist = util.getTableFromList(game.getPlayer(event:getEntity()):getAbility())
+						local count = 0
+						for i = 1,  #ablist do
+							if (ablist[i].abilityID == "LA-HS-017-HIDDEN") then count = count + 1 end
+						end
+						
+						if (count < 5) then 
+							game.sendMessage(event:getDamager(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
+							LAPlayer:setVariable("HS017-cost", LAPlayer:getVariable("HS017-cost") - LAPlayer:getVariable("HS017-requireCost"))
+							event:getDamager():getWorld():spawnParticle(particle.SMOKE_NORMAL, event:getDamager():getLocation():add(0,1,0), 100, 0.3, 0.5, 0.3, 0.1)
+							event:getDamager():getWorld():playSound(event:getDamager():getLocation(), "hs17.useline", 0.5, 1)
+							event:getDamager():getWorld():playSound(event:getDamager():getLocation(), "hs17.usebgm", 1, 1)
+							util.runLater(function() 
+								event:getEntity():getWorld():spawnParticle(particle.REDSTONE, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.9, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(139, 0, 0), 1.0 }))
+								event:getEntity():getWorld():spawnParticle(particle.ITEM_CRACK, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").COAL_BLOCK}))
+								event:getEntity():getWorld():spawnParticle(particle.ITEM_CRACK, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").REDSTONE_BLOCK}))
+								game.addAbility(game.getPlayer(event:getEntity()), "LA-HS-017-HIDDEN") 
+								game.sendMessage(event:getEntity(), "§4오염된 피§c에 감염되었습니다! 주기적으로 데미지를 입습니다.")
+								game.sendMessage(event:getEntity(), "§4오염된 피§c를 다른 사람에게 전염 시킬 수 있습니다.")
+								game.sendMessage(event:getDamager(), "§4오염된 피§c를 감염시켰습니다.")
+							end, 1)
+						end
+					else
+						ability:resetCooldown(id)
+					end
 				else
 					game.sendMessage(event:getDamager(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS017-requireCost") .. "개)")
 				end

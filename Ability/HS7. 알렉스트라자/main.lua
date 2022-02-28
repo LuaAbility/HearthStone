@@ -4,7 +4,7 @@ local dustOption = newInstance("$.Particle$DustTransition", {import("$.Color").Y
 
 function Init(abilityData)
 	plugin.requireDataPack("HearthStone", "https://blog.kakaocdn.net/dn/sAeFO/btrrxXWPS5C/aODIDmfwRB3boWzAlG6Wo1/HearthStone.zip?attach=1&knm=tfile.zip")
-	plugin.registerEvent(abilityData, "HS007-abilityUse", "PlayerInteractEvent", 100)
+	plugin.registerEvent(abilityData, "HS007-abilityUse", "PlayerInteractEvent", 300)
 end
 
 function onEvent(funcTable)
@@ -45,22 +45,27 @@ function abilityUse(LAPlayer, event, ability, id)
 					if event:getAction():toString() == "RIGHT_CLICK_AIR" or event:getAction():toString() == "RIGHT_CLICK_BLOCK" then
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do
-							if not players[i]:getPlayer():isDead() and getLookingAt(event:getPlayer(), players[i]:getPlayer(), 0.99) then
-								game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
-								LAPlayer:setVariable("HS007-cost", LAPlayer:getVariable("HS007-cost") - LAPlayer:getVariable("HS007-requireCost"))
-								drawLine(event:getPlayer():getEyeLocation(), players[i]:getPlayer():getEyeLocation())
-								players[i]:getPlayer():setHealth(10)
-								players[i]:getPlayer():setFoodLevel(10)
-								players[i]:getPlayer():getWorld():spawnParticle(particle.REDSTONE, players[i]:getPlayer():getLocation():add(0, 1, 0), 300, 0.3, 0.5, 0.3, 0.05, dustOption)
-								players[i]:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, players[i]:getPlayer():getLocation():add(0, 1, 0), 300, 0.3, 0.5, 0.3, 0.05)
-								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.useline", 0.5, 1)
-								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.usebgm", 1, 1)
-								players[i]:getPlayer():getWorld():playSound(players[i]:getPlayer():getLocation(), "hs7.hitsfx", 0.5, 1)
+							if getLookingAt(event:getPlayer(), players[i]:getPlayer(), 0.98) then
+								if game.targetPlayer(LAPlayer, players[i]) then
+									game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
+									LAPlayer:setVariable("HS007-cost", LAPlayer:getVariable("HS007-cost") - LAPlayer:getVariable("HS007-requireCost"))
+									drawLine(event:getPlayer():getEyeLocation(), players[i]:getPlayer():getEyeLocation())
+									players[i]:getPlayer():setHealth(10)
+									players[i]:getPlayer():setFoodLevel(10)
+									players[i]:getPlayer():getWorld():spawnParticle(particle.REDSTONE, players[i]:getPlayer():getLocation():add(0, 1, 0), 300, 0.3, 0.5, 0.3, 0.05, dustOption)
+									players[i]:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, players[i]:getPlayer():getLocation():add(0, 1, 0), 300, 0.3, 0.5, 0.3, 0.05)
+									event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.useline", 0.5, 1)
+									event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs7.usebgm", 1, 1)
+									players[i]:getPlayer():getWorld():playSound(players[i]:getPlayer():getLocation(), "hs7.hitsfx", 0.5, 1)
+								else
+									ability:resetCooldown(id)
+								end
 								return 0
 							end
 						end
 						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c타겟할 플레이어가 없습니다.")
 					elseif event:getAction():toString() == "LEFT_CLICK_AIR" or event:getAction():toString() == "LEFT_CLICK_BLOCK" then
+						print(1)
 						LAPlayer:setVariable("HS007-cost", LAPlayer:getVariable("HS007-cost") - LAPlayer:getVariable("HS007-requireCost"))
 						event:getPlayer():getWorld():spawnParticle(particle.REDSTONE, event:getPlayer():getLocation():add(0, 1, 0), 300, 0.3, 0.5, 0.3, 0.05, dustOption)
 						event:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, event:getPlayer():getLocation():add(0, 1, 0), 300, 0.3, 0.5, 0.3, 0.05)

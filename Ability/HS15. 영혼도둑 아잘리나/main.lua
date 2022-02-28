@@ -45,12 +45,16 @@ function abilityUse(LAPlayer, event, ability, id)
 					if LAPlayer:getVariable("HS015-cost") >= LAPlayer:getVariable("HS015-requireCost") then
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do
-							if not players[i]:getPlayer():isDead() and getLookingAt(event:getPlayer(), players[i]:getPlayer(), 0.98) then
-								game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
-								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs15.usebgm", 0.5, 1)
-								event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs15.useline", 1, 1)
-								LAPlayer:setVariable("HS015-cost", LAPlayer:getVariable("HS015-cost") - LAPlayer:getVariable("HS015-requireCost"))
-								drawLine(event:getPlayer(), players[i]:getPlayer())
+							if getLookingAt(event:getPlayer(), players[i]:getPlayer(), 0.98) then
+								if game.targetPlayer(LAPlayer, players[i]) then
+									game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
+									event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs15.usebgm", 0.5, 1)
+									event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs15.useline", 1, 1)
+									LAPlayer:setVariable("HS015-cost", LAPlayer:getVariable("HS015-cost") - LAPlayer:getVariable("HS015-requireCost"))
+									drawLine(event:getPlayer(), players[i]:getPlayer())
+								else
+									ability:resetCooldown(id)
+								end
 								return 0
 							end
 						end

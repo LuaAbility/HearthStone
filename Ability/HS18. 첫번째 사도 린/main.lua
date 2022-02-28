@@ -15,7 +15,7 @@ function onTimer(player, ability)
 		player:setVariable("HS018-health", player:getPlayer():getHealth()) 
 		player:setVariable("HS018-healthStack", 0) 
 		player:setVariable("HS018-cost", 0) 
-		player:setVariable("HS018-requireCost", 5) 
+		player:setVariable("HS018-requireCost", 7) 
 		player:setVariable("HS018-abilityCount", 0) 
 	end
 	
@@ -64,7 +64,7 @@ function abilityUse(LAPlayer, event, ability, id)
 						
 						if abilityCount >= 5 then
 							util.runLater(function()
-								game.sendMessage(event:getPlayer(), "§2[§a" .. ability.abilityName .. "§2] §a능력을 5번 사용하여 능력이 변경됩니다.")
+								game.sendMessage(event:getPlayer(), "§2[§a" .. ability.abilityName .. "§2] §a능력을 8번 사용하여 능력이 변경됩니다.")
 								LAPlayer:setVariable("HS018-passiveCount", 0) 
 								LAPlayer:setVariable("HS018-cost", 0) 
 								LAPlayer:setVariable("HS018-requireCost", 10) 
@@ -89,14 +89,14 @@ function addCost(player, ability)
 		local healthAmount = (player:getVariable("HS018-health") - player:getPlayer():getHealth()) + player:getVariable("HS018-healthStack")
 		while cost <= 10 do
 			if cost <= 6 then
-				if (healthAmount - 2 >= 0) then
-					cost = cost + 1
-					healthAmount = healthAmount - 2
-				else break end
-			else
 				if (healthAmount - 4 >= 0) then
 					cost = cost + 1
 					healthAmount = healthAmount - 4
+				else break end
+			else
+				if (healthAmount - 6 >= 0) then
+					cost = cost + 1
+					healthAmount = healthAmount - 6
 				else break end
 			end
 		end

@@ -118,7 +118,7 @@ function hit(player)
 	local doAgain = false
 	local players = util.getTableFromList(game.getPlayers())
 	for i = 1, #players do
-		if players[i]:getPlayer() ~= player:getPlayer() then
+		if players[i]:getPlayer() ~= player:getPlayer() and game.targetPlayer(player, players[i], false) then
 			players[i]:getPlayer():damage(4, player:getPlayer())
 			players[i]:getPlayer():getWorld():playSound(players[i]:getPlayer():getLocation(), "hs19.hitsfx", 1, 1)
 			players[i]:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, players[i]:getPlayer():getLocation():add(0,1,0), 100, 0.3, 0.7, 0.3, 0.05)

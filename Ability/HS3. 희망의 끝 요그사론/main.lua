@@ -61,7 +61,7 @@ function abilityUse(LAPlayer, event, ability, id)
 						
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do
-							if players[i]:getPlayer() ~= LAPlayer:getPlayer() then
+							if players[i]:getPlayer() ~= LAPlayer:getPlayer() and game.targetPlayer(LAPlayer, players[i], false) then
 								local ability = util.getTableFromList(players[i]:getAbility())
 								util.runLater(function()
 									for j = 1, #ability do
