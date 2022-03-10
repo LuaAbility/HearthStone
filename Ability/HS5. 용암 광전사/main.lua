@@ -65,7 +65,7 @@ function abilityUse(LAPlayer, event, ability, id)
 						
 						if event:getPlayer():getHealth() > 4 then 
 							event:getPlayer():setHealth(4) 
-							player:setVariable("HS005-health", 4) 
+							LAPlayer:setVariable("HS005-health", 4) 
 						end
 						event:getPlayer():getAttribute(attribute.GENERIC_MAX_HEALTH):setBaseValue(4)
 						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs5.useline", 1, 1)

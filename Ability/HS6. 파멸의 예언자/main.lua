@@ -81,7 +81,7 @@ function Apocalypse(player)
 	for i = 1, #players do
 		if player:getPlayer():getWorld():getEnvironment() == players[i]:getPlayer():getPlayer():getWorld():getEnvironment() and 
 			(player:getPlayer():getLocation():distance(players[i]:getPlayer():getLocation()) <= 100) and game.targetPlayer(player, players[i], false) then
-			players[i]:getPlayer():getWorld():createExplosion(players[i]:getPlayer():getLocation(), 10)
+			players[i]:getPlayer():getWorld():createExplosion(players[i]:getPlayer():getLocation(), 5.0)
 		end
 	end
 end

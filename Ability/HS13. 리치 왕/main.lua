@@ -201,7 +201,7 @@ function addStray(LAPlayer, event, ability, id)
 		local damager = damageEvent:getDamager()
 		if damageEvent:getCause():toString() == "PROJECTILE" then damager = damageEvent:getDamager():getShooter() end
 		
-		if damagee:getType():toString() == "PLAYER" then
+		if not util.hasClass(damager, "org.bukkit.projectiles.BlockProjectileSource") and damagee:getType():toString() == "PLAYER" then
 			if damager:getType():toString() == "PLAYER" and game.checkCooldown(LAPlayer, game.getPlayer(damager), ability, id) then
 				LAPlayer:setVariable("HS013-summonCount", LAPlayer:getVariable("HS013-summonCount") + 1) 
 				game.sendMessage(LAPlayer:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b스컬지 소환 수가 증가했습니다. (" .. LAPlayer:getVariable("HS013-summonCount") .. "명)")
