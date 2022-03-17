@@ -39,7 +39,7 @@ function onTimer(player, ability)
 	
 	local timeCount = player:getVariable("HS003-abilityTime")
 	if timeCount > 0 then
-		timeCount = timeCount - 2
+		timeCount = timeCount - 1
 		if timeCount <= 0 then ResetAbility(player, ability) end
 		player:setVariable("HS003-abilityTime", timeCount)
 	end

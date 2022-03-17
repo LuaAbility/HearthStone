@@ -21,7 +21,7 @@ function onTimer(player, ability)
 		count = 0
 		damage(player:getPlayer())
 	end
-	count = count + 2
+	count = count + 1
 	player:setVariable("HS017-blood", count)
 end
 

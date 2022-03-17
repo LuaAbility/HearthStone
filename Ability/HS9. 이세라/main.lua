@@ -42,7 +42,7 @@ function onTimer(player, ability)
 	
 	local timeCount = player:getVariable("HS009-abilityTime")
 	if timeCount > 0 then
-		timeCount = timeCount - 2
+		timeCount = timeCount - 1
 		if timeCount <= 0 then game.sendMessage(player:getPlayer(), "§1[§b꿈§1] §b능력 시전 시간이 종료되었습니다.") end
 		player:getPlayer():getWorld():spawnParticle(particle.REDSTONE, player:getPlayer():getLocation():add(0, 1, 0), 15, 0.3, 0.5, 0.3, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").LIME, 1}))
 		player:setVariable("HS009-abilityTime", timeCount)
@@ -119,7 +119,7 @@ function nightmare(player)
 	itemMeta:addEnchant(enchantment.DAMAGE_ALL, 5, true)
 	itemMeta:setRepairCost(9999999)
 	item:setItemMeta(itemMeta)
-	player:getWorld():dropItemNaturally(player:getLocation(), item)
+	player:getInventory():addItem( { item } )
 end
 
 function dream(player)
@@ -132,7 +132,7 @@ function dream(player)
 	itemMeta:setLore( lore )
 	
 	item:setItemMeta(itemMeta)
-	player:getWorld():dropItemNaturally(player:getLocation(), item)
+	player:getInventory():addItem( { item } )
 end
 
 function goodOmen(player)
@@ -145,7 +145,7 @@ function goodOmen(player)
 	itemMeta:addCustomEffect(newInstance("$.potion.PotionEffect", {effect.REGENERATION, 600, 1}), true)
 	itemMeta:setColor(import("$.Color").LIME)
 	item:setItemMeta(itemMeta)
-	player:getWorld():dropItemNaturally(player:getLocation(), item)
+	player:getInventory():addItem( { item } )
 end
 
 function allSleep(player)
@@ -158,7 +158,7 @@ function allSleep(player)
 	itemMeta:setLore( lore )
 	
 	item:setItemMeta(itemMeta)
-	player:getWorld():dropItemNaturally(player:getLocation(), item)
+	player:getInventory():addItem( { item } )
 end
 
 function cancelDamage(LAPlayer, event, ability, id)

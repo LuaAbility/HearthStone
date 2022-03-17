@@ -40,7 +40,7 @@ function onTimer(player, ability)
 	
 	local timeCount = player:getVariable("HS005-abilityTime")
 	if timeCount > 0 then
-		timeCount = timeCount - 2
+		timeCount = timeCount - 1
 		player:getPlayer():addPotionEffect(newInstance("$.potion.PotionEffect", {effect.INCREASE_DAMAGE, 20, 0}))
 		player:getPlayer():getWorld():spawnParticle(import("$.Particle").LAVA, player:getPlayer():getLocation():add(0,1,0), 3, 0.3, 0.3, 0.3, 0.9)
 		if timeCount % util.random(20, 30) == 0 then 
@@ -64,10 +64,10 @@ function abilityUse(LAPlayer, event, ability, id)
 						LAPlayer:setVariable("HS005-abilityTime", 200)
 						
 						if event:getPlayer():getHealth() > 4 then 
-							event:getPlayer():setHealth(4) 
-							LAPlayer:setVariable("HS005-health", 4) 
+							event:getPlayer():setHealth(game.getMaxHealth() / 0.2) 
+							LAPlayer:setVariable("HS005-health", game.getMaxHealth() / 0.2) 
 						end
-						event:getPlayer():getAttribute(attribute.GENERIC_MAX_HEALTH):setBaseValue(4)
+						event:getPlayer():getAttribute(attribute.GENERIC_MAX_HEALTH):setBaseValue(game.getMaxHealth() / 0.2)
 						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs5.useline", 1, 1)
 					else
 						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS005-requireCost") .. "개)")

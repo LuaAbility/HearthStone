@@ -40,7 +40,7 @@ function onTimer(player, ability)
 	local timeCount = player:getVariable("HS001-halfTime")
 	if timeCount > 0 then
 		circleEffect(player:getPlayer():getLocation(), timeCount % circleDelay)
-		timeCount = timeCount - 2
+		timeCount = timeCount - 1
 		if timeCount <= 0 then ResetTime(player, ability) end
 		player:setVariable("HS001-halfTime", timeCount)
 	end
@@ -84,7 +84,7 @@ function abilityUse(LAPlayer, event, ability, id)
 						end
 						
 						event:getPlayer():getWorld():spawnParticle(import("$.Particle").SMOKE_NORMAL, event:getPlayer():getLocation():add(0,1,0), 150, 0.5, 1, 0.5, 0.9)
-						game.broadcastMessage("§6노즈도르무§e의 능력 발동으로 재사용 대기시간이 반으로 줄어듭니다!")
+						game.broadcastMessage("§6노즈도르무§e의 능력 발동으로 재사용 대기시간이 두배로 늘어납니다!")
 					else
 						game.sendMessage(event:getPlayer(), "§4[§c" .. ability.abilityName .. "§4] §c마나 수정이 부족합니다! (필요 마나 수정 : " .. LAPlayer:getVariable("HS001-requireCost") .. "개)")
 						ability:resetCooldown(id)

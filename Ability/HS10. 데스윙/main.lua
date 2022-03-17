@@ -40,7 +40,7 @@ function onTimer(player, ability)
 	
 	local timeCount = player:getVariable("HS010-abilityTime")
 	if timeCount > 0 then
-		timeCount = timeCount - 2
+		timeCount = timeCount - 1
 		if timeCount <= 0 then damage(player, ability) end
 		player:setVariable("HS010-abilityTime", timeCount)
 	end

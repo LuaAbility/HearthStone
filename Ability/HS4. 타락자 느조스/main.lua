@@ -41,7 +41,7 @@ function onTimer(player, ability)
 	
 	local timeCount = player:getVariable("HS004-abilityTime")
 	if timeCount > 0 then
-		timeCount = timeCount - 2
+		timeCount = timeCount - 1
 		if timeCount <= 0 then ResetPlayer(player, ability) end
 		player:setVariable("HS004-abilityTime", timeCount)
 	end
@@ -66,7 +66,7 @@ function abilityUse(LAPlayer, event, ability, id)
 						event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs4.usebgm", 1, 1)
 						
 						util.runLater(function()
-							if LAPlayer:getVariable("HS004-abilityTime") <= 0 then
+							if LAPlayer:getVariable("HS004-abilityTime") and LAPlayer:getVariable("HS004-abilityTime") <= 0 then
 								local players = util.getTableFromList(game.getAllPlayers())
 								for i = 1, #players do
 									if not players[i].isSurvive then 

@@ -40,7 +40,7 @@ function onTimer(player, ability)
 	
 	local timeCount = player:getVariable("HS006-abilityTime")
 	if timeCount > 0 then
-		timeCount = timeCount - 2
+		timeCount = timeCount - 1
 		if timeCount <= 0 then Apocalypse(player) end
 		if timeCount % 20 == 0 then effect(player, timeCount) end
 		player:setVariable("HS006-abilityTime", timeCount)
