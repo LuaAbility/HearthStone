@@ -156,14 +156,18 @@ end
 function cancelTarget(LAPlayer, event, ability, id)
 	if event:getTarget() ~= nil and event:getEntity() ~= nil then
 		if event:getTarget():getType():toString() == "PLAYER" and event:getEntity():getType():toString() == "STRAY" then
-			if game.checkCooldown(LAPlayer, game.getPlayer(event:getTarget()), ability, id) then
-				event:setTarget(nil)
-				event:setCancelled(true)
+			if string.find(event:getEntity():getCustomName(), "스컬지") and game.getTeamManager():getMyTeam(LAPlayer:getTeam(), false):contains(game.getPlayer(event:getTarget())) then
+				if game.checkCooldown(LAPlayer, LAPlayer, ability, id) then
+					event:setTarget(nil)
+					event:setCancelled(true)
+				end
 			end
 		elseif event:getTarget():getType():toString() == "STRAY" and event:getEntity():getType():toString() == "STRAY" then
-			if game.checkCooldown(LAPlayer, LAPlayer, ability, id) then
-				event:setTarget(nil)
-				event:setCancelled(true)
+			if string.find(event:getTarget():getCustomName(), "스컬지") and string.find(event:getEntity():getCustomName(), "스컬지") then
+				if game.checkCooldown(LAPlayer, LAPlayer, ability, id) then
+					event:setTarget(nil)
+					event:setCancelled(true)
+				end
 			end
 		end
 	end

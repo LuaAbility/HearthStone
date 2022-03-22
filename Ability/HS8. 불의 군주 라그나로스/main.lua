@@ -46,7 +46,7 @@ function abilityUse(LAPlayer, event, ability, id)
 			if game.isAbilityItem(event:getItem(), "IRON_INGOT") then
 				if game.checkCooldown(LAPlayer, game.getPlayer(event:getPlayer()), ability, id, false) then
 					if LAPlayer:getVariable("HS008-cost") >= LAPlayer:getVariable("HS008-requireCost") then
-						local players = util.getTableFromList(game.getPlayers())
+						local players = util.getTableFromList(game.getTeamManager():getOpponentTeam(LAPlayer, false))
 						local abilityCount = 0
 						for i = 1, #players do
 							if event:getPlayer() ~= players[i]:getPlayer() then

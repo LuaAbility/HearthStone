@@ -17,7 +17,7 @@ function abilityUse(LAPlayer, event, ability, id)
 			local randomIndex = util.random(1, #players)
 			while players[randomIndex]:getPlayer() == event:getEntity() do randomIndex = util.random(1, #players) end
 			
-			if game.targetPlayer(LAPlayer, players[randomIndex], false) then
+			if game.targetPlayer(LAPlayer, players[randomIndex], false, true) then
 				local loc = event:getEntity():getLocation():clone()
 				loc:setPitch(0)
 				loc:setYaw(0)

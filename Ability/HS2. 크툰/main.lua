@@ -45,7 +45,7 @@ function abilityUse(LAPlayer, event, ability, id)
 					if LAPlayer:getVariable("HS002-cost") >= LAPlayer:getVariable("HS002-requireCost") then
 						game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 						local cost = LAPlayer:getVariable("HS002-cost")
-						local players = util.getTableFromList(game.getPlayers())
+						local players = util.getTableFromList(game.getTeamManager():getOpponentTeam(LAPlayer, false))
 						for i = 1, #players do
 							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs2.useline", 1, 1)
 							players[i]:getPlayer():playSound(players[i]:getPlayer():getLocation(), "hs2.usebgm", 1, 1)

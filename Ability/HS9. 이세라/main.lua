@@ -89,7 +89,7 @@ function abilityUse(LAPlayer, event, ability, id)
 					local players = util.getTableFromList(game.getPlayers())
 					event:getPlayer():getWorld():setTime(18000)
 					for i = 1, #players do
-						if event:getPlayer() ~= players[i]:getPlayer() and game.targetPlayer(LAPlayer, players[i], false) then
+						if event:getPlayer() ~= players[i]:getPlayer() and game.targetPlayer(LAPlayer, players[i], false, true) then
 							local bed = players[i]:getPlayer():getWorld():getBlockAt(players[i]:getPlayer():getLocation():add(0, 0, 0))
 							bed:setType(material.LIME_BED)
 							local bedData = bed:getBlockData()

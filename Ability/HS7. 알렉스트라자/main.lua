@@ -46,7 +46,7 @@ function abilityUse(LAPlayer, event, ability, id)
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do
 							if getLookingAt(event:getPlayer(), players[i]:getPlayer(), 0.98) then
-								if game.targetPlayer(LAPlayer, players[i]) then
+								if game.targetPlayer(LAPlayer, players[i], true, true) then
 									game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 									LAPlayer:setVariable("HS007-cost", LAPlayer:getVariable("HS007-cost") - LAPlayer:getVariable("HS007-requireCost"))
 									drawLine(event:getPlayer():getEyeLocation(), players[i]:getPlayer():getEyeLocation())

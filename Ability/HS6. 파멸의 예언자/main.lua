@@ -90,7 +90,7 @@ function cancelAbility(LAPlayer, event, ability, id)
 	if event:getEntity() == LAPlayer:getPlayer() then
 		if LAPlayer:getVariable("HS006-abilityTime") > 2 then
 			if game.checkCooldown(LAPlayer, game.getPlayer(event:getEntity()), ability, id) then
-				local players = util.getTableFromList(game.getPlayers())
+				local players = util.getTableFromList(game.getTeamManager():getOpponentTeam(LAPlayer, false))
 				for i = 1, #players do
 					if event:getEntity():getWorld():getEnvironment() == players[i]:getPlayer():getPlayer():getWorld():getEnvironment() and 
 						(event:getEntity():getLocation():distance(players[i]:getPlayer():getLocation()) <= 100) then
@@ -105,7 +105,7 @@ function cancelAbility(LAPlayer, event, ability, id)
 end
 
 function effect(player, timeCount)
-	local players = util.getTableFromList(game.getPlayers())
+	local players = util.getTableFromList(game.getTeamManager():getOpponentTeam(player, false))
 	for i = 1, #players do
 		if player:getPlayer():getWorld():getEnvironment() == players[i]:getPlayer():getPlayer():getWorld():getEnvironment() and 
 			(player:getPlayer():getLocation():distance(players[i]:getPlayer():getLocation()) <= 100) and game.targetPlayer(player, players[i], false) then

@@ -91,7 +91,7 @@ function damage(player, ability)
 		end, i)
 	end
 	
-	local players = util.getTableFromList(game.getPlayers())
+	local players = util.getTableFromList(game.getTeamManager():getOpponentTeam(player, false))
 	for i = 1, #players do
 		if player:getPlayer() ~= players[i]:getPlayer() and game.targetPlayer(player, players[i], false) and
 			player:getPlayer():getWorld():getEnvironment() == players[i]:getPlayer():getPlayer():getWorld():getEnvironment() and 
