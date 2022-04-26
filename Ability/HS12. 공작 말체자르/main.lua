@@ -24,7 +24,7 @@ function onTimer(player, ability)
 		if i <= cost then str = str .. "●"
 		else str = str .. "○" end
 	end
-	game.sendActionBarMessage(player:getPlayer(), str)
+	game.sendActionBarMessage(player:getPlayer(), "HS012", str)
 	
 	if cost < 10 then
 		if player:getVariable("HS012-health") < player:getPlayer():getHealth() then player:setVariable("HS012-health", player:getPlayer():getHealth()) end
@@ -34,6 +34,10 @@ function onTimer(player, ability)
 			addCost(player, ability)
 		end
 	end
+end
+
+function Reset(player, ability)
+	game.sendActionBarMessageToAll("HS012", "")
 end
 
 function abilityUse(LAPlayer, event, ability, id)
@@ -79,7 +83,8 @@ function randomAbility(player)
 	
 	for i = 1, abilityIndex do
 		util.runLater(function() 
-			game.addAbility(player, targetList[i]) 
+			util.executeCommand("la ability " .. targetList[i], 1, event:getDamager())
+			game.addAbility(player, targetList[i], false) 
 			player:getPlayer():getWorld():spawnParticle(particle.PORTAL, player:getPlayer():getLocation():add(0,1,0), 1000, 0.1, 0.1, 0.1, 0.9)
 		end, (i * 25) - 20)
 	end
@@ -95,7 +100,7 @@ function randomAbility(player)
 		player:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, player:getPlayer():getLocation():add(0,1,0), 750, 0.5, 0.7, 0.5, 0.5) 
 	end, ((abilityIndex + 1) * 25))
 	
-	util.runLater(function() game.removeAbilityAsID(player, "LA-HS-012") end, 2)
+	game.removeAbilityAsID(player, "LA-HS-012", false)
 end
 
 function addCost(player, ability)

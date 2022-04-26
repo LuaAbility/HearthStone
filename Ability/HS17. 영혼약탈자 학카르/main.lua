@@ -24,7 +24,7 @@ function onTimer(player, ability)
 		if i <= cost then str = str .. "●"
 		else str = str .. "○" end
 	end
-	game.sendActionBarMessage(player:getPlayer(), str)
+	game.sendActionBarMessage(player:getPlayer(), "HS017", str)
 	
 	if cost < 10 then
 		if player:getVariable("HS017-health") < player:getPlayer():getHealth() then player:setVariable("HS017-health", player:getPlayer():getHealth()) end
@@ -34,6 +34,10 @@ function onTimer(player, ability)
 			addCost(player, ability)
 		end
 	end
+end
+
+function Reset(player, ability)
+	game.sendActionBarMessageToAll("HS017", "")
 end
 
 function abilityUse(LAPlayer, event, ability, id)
@@ -55,15 +59,14 @@ function abilityUse(LAPlayer, event, ability, id)
 							event:getDamager():getWorld():spawnParticle(particle.SMOKE_NORMAL, event:getDamager():getLocation():add(0,1,0), 100, 0.3, 0.5, 0.3, 0.1)
 							event:getDamager():getWorld():playSound(event:getDamager():getLocation(), "hs17.useline", 0.5, 1)
 							event:getDamager():getWorld():playSound(event:getDamager():getLocation(), "hs17.usebgm", 1, 1)
-							util.runLater(function() 
-								event:getEntity():getWorld():spawnParticle(particle.REDSTONE, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.9, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(139, 0, 0), 1.0 }))
-								event:getEntity():getWorld():spawnParticle(particle.ITEM_CRACK, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").COAL_BLOCK}))
-								event:getEntity():getWorld():spawnParticle(particle.ITEM_CRACK, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").REDSTONE_BLOCK}))
-								game.addAbility(game.getPlayer(event:getEntity()), "LA-HS-017-HIDDEN") 
-								game.sendMessage(event:getEntity(), "§4오염된 피§c에 감염되었습니다! 주기적으로 데미지를 입습니다.")
-								game.sendMessage(event:getEntity(), "§4오염된 피§c를 다른 사람에게 전염 시킬 수 있습니다.")
-								game.sendMessage(event:getDamager(), "§4오염된 피§c를 감염시켰습니다.")
-							end, 1)
+							
+							event:getEntity():getWorld():spawnParticle(particle.REDSTONE, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.9, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(139, 0, 0), 1.0 }))
+							event:getEntity():getWorld():spawnParticle(particle.ITEM_CRACK, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").COAL_BLOCK}))
+							event:getEntity():getWorld():spawnParticle(particle.ITEM_CRACK, event:getEntity():getLocation():add(0,1,0), 50, 0.2, 0.7, 0.2, 0.05, newInstance("$.inventory.ItemStack", {import("$.Material").REDSTONE_BLOCK}))
+							game.addAbility(game.getPlayer(event:getEntity()), "LA-HS-017-HIDDEN", false) 
+							game.sendMessage(event:getEntity(), "§4오염된 피§c에 감염되었습니다! 주기적으로 데미지를 입습니다.")
+							game.sendMessage(event:getEntity(), "§4오염된 피§c를 다른 사람에게 전염 시킬 수 있습니다.")
+							game.sendMessage(event:getDamager(), "§4오염된 피§c를 감염시켰습니다.")
 						end
 					else
 						ability:resetCooldown(id)

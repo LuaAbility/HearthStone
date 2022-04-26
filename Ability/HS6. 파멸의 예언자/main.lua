@@ -27,7 +27,7 @@ function onTimer(player, ability)
 		if i <= cost then str = str .. "●"
 		else str = str .. "○" end
 	end
-	game.sendActionBarMessage(player:getPlayer(), str)
+	game.sendActionBarMessage(player:getPlayer(), "HS006", str)
 	
 	if cost < 10 then
 		if player:getVariable("HS006-health") < player:getPlayer():getHealth() then player:setVariable("HS006-health", player:getPlayer():getHealth()) end
@@ -45,6 +45,10 @@ function onTimer(player, ability)
 		if timeCount % 20 == 0 then effect(player, timeCount) end
 		player:setVariable("HS006-abilityTime", timeCount)
 	end
+end
+
+function Reset(player, ability)
+	game.sendActionBarMessageToAll("HS006", "")
 end
 
 function abilityUse(LAPlayer, event, ability, id)

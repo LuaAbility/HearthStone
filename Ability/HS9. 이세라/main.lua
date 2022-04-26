@@ -29,7 +29,7 @@ function onTimer(player, ability)
 		if i <= cost then str = str .. "●"
 		else str = str .. "○" end
 	end
-	game.sendActionBarMessage(player:getPlayer(), str)
+	game.sendActionBarMessage(player:getPlayer(), "HS009", str)
 	
 	if cost < 10 then
 		if player:getVariable("HS009-health") < player:getPlayer():getHealth() then player:setVariable("HS009-health", player:getPlayer():getHealth()) end
@@ -47,6 +47,10 @@ function onTimer(player, ability)
 		player:getPlayer():getWorld():spawnParticle(particle.REDSTONE, player:getPlayer():getLocation():add(0, 1, 0), 15, 0.3, 0.5, 0.3, 0.05, newInstance("$.Particle$DustOptions", {import("$.Color").LIME, 1}))
 		player:setVariable("HS009-abilityTime", timeCount)
 	end
+end
+
+function Reset(player, ability)
+	game.sendActionBarMessageToAll("HS009", "")
 end
 
 function abilityUse(LAPlayer, event, ability, id)

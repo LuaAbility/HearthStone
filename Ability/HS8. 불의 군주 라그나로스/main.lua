@@ -28,7 +28,7 @@ function onTimer(player, ability)
 		if i <= cost then str = str .. "●"
 		else str = str .. "○" end
 	end
-	game.sendActionBarMessage(player:getPlayer(), str)
+	game.sendActionBarMessage(player:getPlayer(), "HS008", str)
 	
 	if cost < 10 then
 		if player:getVariable("HS008-health") < player:getPlayer():getHealth() then player:setVariable("HS008-health", player:getPlayer():getHealth()) end
@@ -38,6 +38,10 @@ function onTimer(player, ability)
 			addCost(player, ability)
 		end
 	end
+end
+
+function Reset(player, ability)
+	game.sendActionBarMessageToAll("HS008", "")
 end
 
 function abilityUse(LAPlayer, event, ability, id)
@@ -112,10 +116,10 @@ function abilityUse(LAPlayer, event, ability, id)
 end
 
 function cancelAttack(LAPlayer, event, ability, id)
-	local damager = event:getDamager()
-	if event:getCause():toString() == "PROJECTILE" then damager = event:getDamager():getShooter() end
+	local damager = util.getRealDamager(event:getDamager())
 	
-	if not util.hasClass(damager, "org.bukkit.projectiles.BlockProjectileSource") and damager:getType():toString() == "PLAYER" then
+	
+	if damager ~= nil and damager:getType():toString() == "PLAYER" then
 		if game.checkCooldown(LAPlayer, game.getPlayer(damager), ability, id) then
 			if not LAPlayer:getVariable("HS008-canAttack") then
 				event:setCancelled(true)

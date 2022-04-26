@@ -24,9 +24,14 @@ function onTimer(player, ability)
 		player:getPlayer():addPotionEffect(newInstance("$.potion.PotionEffect", {effect.INCREASE_DAMAGE, 10, 1}))
 		player:getPlayer():addPotionEffect(newInstance("$.potion.PotionEffect", {effect.DAMAGE_RESISTANCE, 10, 1}))
 		player:getPlayer():getWorld():spawnParticle(particle.SMOKE_NORMAL, player:getPlayer():getLocation():add(0,1,0), 10, 0.3, 0.7, 0.3, 0.05)
+		game.sendActionBarMessage(player:getPlayer(), "HS014", "§a공격 가능!")
 	else 
-		game.sendActionBarMessage(player:getPlayer(), "§6[§e남은 양초§6] : §e" .. candle .. "개")
+		game.sendActionBarMessage(player:getPlayer(), "HS014", "§6[§e남은 양초§6] : §e" .. candle .. "개")
 	end
+end
+
+function Reset(player, ability)
+	game.sendActionBarMessageToAll("HS014", "")
 end
 
 function abilityUse(LAPlayer, event, ability, id)
@@ -46,10 +51,8 @@ function abilityUse(LAPlayer, event, ability, id)
 				abilityUser:getWorld():playSound(abilityUser:getLocation(), import("$.Sound").BLOCK_FIRE_EXTINGUISH, 1.5, 0.7)
 				game.sendMessage(abilityUser, "§7당신의 능력 발동으로 인해 §8양초 1개§7가 꺼졌습니다.")
 				
-				util.runLater(function() 
-					if candle <= 0 then revive(LAPlayer:getPlayer()) end
-					LAPlayer:setVariable("HS014-currentCandle", candle)
-				end, 60)
+				if candle <= 0 then revive(LAPlayer:getPlayer()) end
+				LAPlayer:setVariable("HS014-currentCandle", candle)
 			end
 		end
 	end
@@ -65,7 +68,7 @@ function revive(player)
 	
 	for i = 1, 35 do
 		util.runLater(function()
-			player:getWorld():spawnParticle(particle.SMOKE_NORMAL, player:getLocation():add(0,1,0), 50, 0.3, 0.7, 0.3, 0.05)
+			player:getWorld():spawnParticle(particle.SMOKE_NORMAL, player:getLocation():add(0,1,0), 20, 0.3, 0.7, 0.3, 0.05)
 		end, i)
 	end
 	
@@ -77,10 +80,10 @@ function revive(player)
 end
 
 function cancelAttack(LAPlayer, event, ability, id)
-	local damager = event:getDamager()
-	if event:getCause():toString() == "PROJECTILE" then damager = event:getDamager():getShooter() end
+	local damager = util.getRealDamager(event:getDamager())
 	
-	if not util.hasClass(damager, "org.bukkit.projectiles.BlockProjectileSource") and damager:getType():toString() == "PLAYER" then
+	
+	if damager ~= nil and damager:getType():toString() == "PLAYER" then
 		if game.checkCooldown(LAPlayer, game.getPlayer(damager), ability, id, false, false) then
 			if LAPlayer:getVariable("HS014-currentCandle") > 0 then
 				event:setCancelled(true)

@@ -43,7 +43,7 @@ function abilityUse(LAPlayer, event, ability, id)
 					end
 					
 					if (count < 5) then 
-						game.addAbility(game.getPlayer(event:getEntity()), "LA-HS-017-HIDDEN") 
+						game.addAbility(game.getPlayer(event:getEntity()), "LA-HS-017-HIDDEN", false) 
 						game.sendMessage(event:getEntity(), "§4오염된 피§c에 감염되었습니다! 주기적으로 데미지를 입습니다.")
 						game.sendMessage(event:getEntity(), "§4오염된 피§c를 다른 사람에게 전염 시킬 수 있습니다.")
 						game.sendMessage(event:getDamager(), "§4오염된 피§c를 감염시켰습니다.")

@@ -34,7 +34,7 @@ function onTimer(player, ability)
 		if i <= cost then str = str .. "●"
 		else str = str .. "○" end
 	end
-	game.sendActionBarMessage(player:getPlayer(), str)
+	game.sendActionBarMessage(player:getPlayer(), "HS013", str)
 	
 	if cost < 10 then
 		if player:getVariable("HS013-health") < player:getPlayer():getHealth() then player:setVariable("HS013-health", player:getPlayer():getHealth()) end
@@ -44,6 +44,10 @@ function onTimer(player, ability)
 			addCost(player, ability)
 		end
 	end
+end
+
+function Reset(player, ability)
+	game.sendActionBarMessageToAll("HS013", "")
 end
 
 function abilityUse(LAPlayer, event, ability, id)
@@ -156,18 +160,14 @@ end
 function cancelTarget(LAPlayer, event, ability, id)
 	if event:getTarget() ~= nil and event:getEntity() ~= nil then
 		if event:getTarget():getType():toString() == "PLAYER" and event:getEntity():getType():toString() == "STRAY" then
-			if string.find(event:getEntity():getCustomName(), "스컬지") and game.getTeamManager():getMyTeam(LAPlayer:getTeam(), false):contains(game.getPlayer(event:getTarget())) then
-				if game.checkCooldown(LAPlayer, LAPlayer, ability, id) then
-					event:setTarget(nil)
-					event:setCancelled(true)
-				end
+			if string.find(event:getEntity():getCustomName(), "스컬지") and game.getTeamManager():getMyTeam(LAPlayer, false):contains(game.getPlayer(event:getTarget())) then
+				event:setTarget(nil)
+				event:setCancelled(true)
 			end
 		elseif event:getTarget():getType():toString() == "STRAY" and event:getEntity():getType():toString() == "STRAY" then
 			if string.find(event:getTarget():getCustomName(), "스컬지") and string.find(event:getEntity():getCustomName(), "스컬지") then
-				if game.checkCooldown(LAPlayer, LAPlayer, ability, id) then
-					event:setTarget(nil)
-					event:setCancelled(true)
-				end
+				event:setTarget(nil)
+				event:setCancelled(true)
 			end
 		end
 	end
@@ -191,8 +191,8 @@ function circleEffect(loc, radius)
         local x = math.cos(angle) * radius
         local z = math.sin(angle) * radius
         location:add(x, 0, z)
-		location:getWorld():spawnParticle(particle.SPIT, location, 5, 0.5, 0, 0.5, 0.1)
-		location:getWorld():spawnParticle(particle.REDSTONE, location, 10, 0.5, 0, 0.5, 0.9, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(222, 255, 255), 1.5 }))
+		location:getWorld():spawnParticle(particle.SPIT, location, 2, 0.5, 0, 0.5, 0.1)
+		location:getWorld():spawnParticle(particle.REDSTONE, location, 2, 0.5, 0, 0.5, 0.9, newInstance("$.Particle$DustOptions", { import("$.Color"):fromRGB(222, 255, 255), 1.5 }))
         location:subtract(x, 0, z)
     end
 end
@@ -202,10 +202,10 @@ function addStray(LAPlayer, event, ability, id)
 	
 	if (damageEvent ~= nil and damageEvent:isCancelled() == false and damageEvent:getEventName() == "EntityDamageByEntityEvent") then
 		local damagee = damageEvent:getEntity()
-		local damager = damageEvent:getDamager()
-		if damageEvent:getCause():toString() == "PROJECTILE" then damager = damageEvent:getDamager():getShooter() end
+		local damager = util.getRealDamager(damageEvent:getDamager())
 		
-		if not util.hasClass(damager, "org.bukkit.projectiles.BlockProjectileSource") and damagee:getType():toString() == "PLAYER" then
+		
+		if damager ~= nil and damagee:getType():toString() == "PLAYER" then
 			if damager:getType():toString() == "PLAYER" and game.checkCooldown(LAPlayer, game.getPlayer(damager), ability, id) then
 				LAPlayer:setVariable("HS013-summonCount", LAPlayer:getVariable("HS013-summonCount") + 1) 
 				game.sendMessage(LAPlayer:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b스컬지 소환 수가 증가했습니다. (" .. LAPlayer:getVariable("HS013-summonCount") .. "명)")

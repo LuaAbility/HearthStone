@@ -18,7 +18,7 @@ function onTimer(player, ability)
 		player:setVariable("HS004-health", player:getPlayer():getHealth()) 
 		player:setVariable("HS004-healthStack", 0) 
 		player:setVariable("HS004-cost", 0) 
-		player:setVariable("HS004-requireCost", 7) 
+		player:setVariable("HS004-requireCost", 10) 
 		player:setVariable("HS004-abilityTime", 0) 
 	end
 	
@@ -28,7 +28,7 @@ function onTimer(player, ability)
 		if i <= cost then str = str .. "●"
 		else str = str .. "○" end
 	end
-	game.sendActionBarMessage(player:getPlayer(), str)
+	game.sendActionBarMessage(player:getPlayer(), "HS004", str)
 	
 	if cost < 10 then
 		if player:getVariable("HS004-health") < player:getPlayer():getHealth() then player:setVariable("HS004-health", player:getPlayer():getHealth()) end
@@ -124,18 +124,25 @@ function ResetPlayer(player, ability)
 	end
 	
 	game.broadcastMessage("§7죽은 자들이 다시 저승으로 돌아갑니다.")
-	game.sendMessage(player:getPlayer(), "§2[§a" .. ability.abilityName .. "§2] §a능력 시전 시간이 종료되었습니다.")
+	game.sendMessage(player:getPlayer(), "§2[§a" .. ability.abilityName .. "§2] §a능력이 사라집니다.")
 end
 
 function Reset(player, ability)
 	if player:getVariable("HS004-abilityTime") ~= nil and player:getVariable("HS004-abilityTime") > 0 then ResetPlayer(player, ability) end
+	game.sendActionBarMessageToAll("HS004", "")
 end
 
 function addCost(player, ability)
 	local prevCost = player:getVariable("HS004-cost")
 	local cost = prevCost
+	local aTime = player:getVariable("HS004-abilityTime")
 	
 	if cost < 10 then
+		if aTime and aTime > 0 then
+			player:setVariable("HS004-health", player:getPlayer():getHealth())
+			return 0
+		end
+		
 		local healthAmount = (player:getVariable("HS004-health") - player:getPlayer():getHealth()) + player:getVariable("HS004-healthStack")
 		while cost <= 10 do
 			if cost <= 6 then

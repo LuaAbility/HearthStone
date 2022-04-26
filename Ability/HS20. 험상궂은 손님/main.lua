@@ -13,6 +13,8 @@ end
 function abilityUse(LAPlayer, event, ability, id)
 	if event:getEntity():getType():toString() == "PLAYER" and util.random() <= 0.4 then
 		if game.checkCooldown(LAPlayer, game.getPlayer(event:getEntity()), ability, id) then
+			if not event:getEntity():getWorld():getWorldBorder():isInside(event:getEntity():getLocation()) then return 0 end
+			
 			local players = util.getTableFromList(game.getPlayers())
 			local randomIndex = util.random(1, #players)
 			while players[randomIndex]:getPlayer() == event:getEntity() do randomIndex = util.random(1, #players) end

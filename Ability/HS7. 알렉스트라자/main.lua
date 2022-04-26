@@ -16,7 +16,7 @@ function onTimer(player, ability)
 		player:setVariable("HS007-health", player:getPlayer():getHealth()) 
 		player:setVariable("HS007-healthStack", 0) 
 		player:setVariable("HS007-cost", 0) 
-		player:setVariable("HS007-requireCost", 9) 
+		player:setVariable("HS007-requireCost", 6) 
 	end
 	
 	local str = "§1[§b마나 수정§1] §b"
@@ -25,7 +25,7 @@ function onTimer(player, ability)
 		if i <= cost then str = str .. "●"
 		else str = str .. "○" end
 	end
-	game.sendActionBarMessage(player:getPlayer(), str)
+	game.sendActionBarMessage(player:getPlayer(), "HS007", str)
 	
 	if cost < 10 then
 		if player:getVariable("HS007-health") < player:getPlayer():getHealth() then player:setVariable("HS007-health", player:getPlayer():getHealth()) end
@@ -37,6 +37,10 @@ function onTimer(player, ability)
 	end
 end
 
+function Reset(player, ability)
+	game.sendActionBarMessageToAll("HS007", "")
+end
+
 function abilityUse(LAPlayer, event, ability, id)
 	if event:getItem() ~= nil then
 		if game.isAbilityItem(event:getItem(), "IRON_INGOT") then
@@ -45,7 +49,7 @@ function abilityUse(LAPlayer, event, ability, id)
 					if event:getAction():toString() == "RIGHT_CLICK_AIR" or event:getAction():toString() == "RIGHT_CLICK_BLOCK" then
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do
-							if getLookingAt(event:getPlayer(), players[i]:getPlayer(), 0.98) then
+							if getLookingAt(event:getPlayer(), players[i]:getPlayer(), 0.95) then
 								if game.targetPlayer(LAPlayer, players[i], true, true) then
 									game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 									LAPlayer:setVariable("HS007-cost", LAPlayer:getVariable("HS007-cost") - LAPlayer:getVariable("HS007-requireCost"))

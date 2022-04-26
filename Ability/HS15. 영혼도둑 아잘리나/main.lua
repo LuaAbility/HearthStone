@@ -25,7 +25,7 @@ function onTimer(player, ability)
 		if i <= cost then str = str .. "●"
 		else str = str .. "○" end
 	end
-	game.sendActionBarMessage(player:getPlayer(), str)
+	game.sendActionBarMessage(player:getPlayer(), "HS015", str)
 	
 	if cost < 10 then
 		if player:getVariable("HS015-health") < player:getPlayer():getHealth() then player:setVariable("HS015-health", player:getPlayer():getHealth()) end
@@ -37,6 +37,10 @@ function onTimer(player, ability)
 	end
 end
 
+function Reset(player, ability)
+	game.sendActionBarMessageToAll("HS015", "")
+end
+
 function abilityUse(LAPlayer, event, ability, id)
 	if event:getAction():toString() == "RIGHT_CLICK_AIR" or event:getAction():toString() == "RIGHT_CLICK_BLOCK" then
 		if event:getItem() ~= nil then
@@ -45,7 +49,7 @@ function abilityUse(LAPlayer, event, ability, id)
 					if LAPlayer:getVariable("HS015-cost") >= LAPlayer:getVariable("HS015-requireCost") then
 						local players = util.getTableFromList(game.getPlayers())
 						for i = 1, #players do
-							if getLookingAt(event:getPlayer(), players[i]:getPlayer(), 0.98) then
+							if getLookingAt(event:getPlayer(), players[i]:getPlayer(), 0.95) then
 								if game.targetPlayer(LAPlayer, players[i], true, true) then
 									game.sendMessage(event:getPlayer(), "§1[§b" .. ability.abilityName .. "§1] §b능력을 사용했습니다.")
 									event:getPlayer():getWorld():playSound(event:getPlayer():getLocation(), "hs15.usebgm", 0.5, 1)

@@ -27,7 +27,7 @@ function onTimer(player, ability)
 		if i <= cost then str = str .. "●"
 		else str = str .. "○" end
 	end
-	game.sendActionBarMessage(player:getPlayer(), str)
+	game.sendActionBarMessage(player:getPlayer(), "HS010", str)
 	
 	if cost < 10 then
 		if player:getVariable("HS010-health") < player:getPlayer():getHealth() then player:setVariable("HS010-health", player:getPlayer():getHealth()) end
@@ -44,6 +44,10 @@ function onTimer(player, ability)
 		if timeCount <= 0 then damage(player, ability) end
 		player:setVariable("HS010-abilityTime", timeCount)
 	end
+end
+
+function Reset(player, ability)
+	game.sendActionBarMessageToAll("HS010", "")
 end
 
 function abilityUse(LAPlayer, event, ability, id)
@@ -107,7 +111,7 @@ function damage(player, ability)
 	
 	player:setVariable("HS010-abilityTime", 0)
 	player:getPlayer():getInventory():clear()
-	util.runLater(function() game.removeAbilityAsID(player, ability.abilityID) end, 2)
+	game.removeAbilityAsID(player, ability.abilityID)
 end
 
 function circleEffect(loc, radius)

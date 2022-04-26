@@ -26,7 +26,7 @@ function onTimer(player, ability)
 		if i <= cost then str = str .. "●"
 		else str = str .. "○" end
 	end
-	game.sendActionBarMessage(player:getPlayer(), str)
+	game.sendActionBarMessage(player:getPlayer(), "HS003", str)
 	
 	if cost < 10 then
 		if player:getVariable("HS003-health") < player:getPlayer():getHealth() then player:setVariable("HS003-health", player:getPlayer():getHealth()) end
@@ -43,6 +43,10 @@ function onTimer(player, ability)
 		if timeCount <= 0 then ResetAbility(player, ability) end
 		player:setVariable("HS003-abilityTime", timeCount)
 	end
+end
+
+function Reset(player, ability)
+	game.sendActionBarMessageToAll("HS003", "")
 end
 
 function abilityUse(LAPlayer, event, ability, id)
@@ -63,12 +67,13 @@ function abilityUse(LAPlayer, event, ability, id)
 						for i = 1, #players do
 							if players[i]:getPlayer() ~= LAPlayer:getPlayer() and game.targetPlayer(LAPlayer, players[i], false, true) then
 								local ability = util.getTableFromList(players[i]:getAbility())
-								util.runLater(function()
-									for j = 1, #ability do
-										table.insert(LAPlayer:getVariable("HS003-abilities"), ability[j].abilityID)
-										game.addAbility(LAPlayer, ability[j].abilityID)
-									end
-								end, 2)
+								
+								for j = 1, #ability do
+									table.insert(LAPlayer:getVariable("HS003-abilities"), ability[j].abilityID, false)
+									game.addAbility(LAPlayer, ability[j].abilityID)
+								end
+								
+								util.executeCommand("la check", 1, event:getDamager())
 							end
 						end
 					else
@@ -86,7 +91,7 @@ function ResetAbility(player, ability)
 	if #abilities > 0 then
 		util.runLater(function()
 			for i = 1, #abilities do
-				game.removeAbilityAsID(player, abilities[i])
+				game.removeAbilityAsID(player, abilities[i], false)
 			end
 		end, 2)
 	end
