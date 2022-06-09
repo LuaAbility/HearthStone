@@ -150,8 +150,8 @@ function effect(player)
 				local z = math.sin(angle) * util.random(-7, 7)
 				local block = player:getWorld():getHighestBlockAt(player:getLocation():getX() + x, player:getLocation():getZ() + z)
 				local randomIndex = util.random(1, 10)
-				if randomIndex <= 9 then block:setType(material.SNOW_BLOCK)
-				else block:setType(material.ICE) end
+				if randomIndex <= 9 then util.setBlockType(block, material.SNOW_BLOCK)
+				else util.setBlockType(block, material.ICE) end
 			end
 		end, i)
 	end

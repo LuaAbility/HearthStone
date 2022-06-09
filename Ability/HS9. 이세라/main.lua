@@ -95,13 +95,13 @@ function abilityUse(LAPlayer, event, ability, id)
 					for i = 1, #players do
 						if event:getPlayer() ~= players[i]:getPlayer() and game.targetPlayer(LAPlayer, players[i], false, true) then
 							local bed = players[i]:getPlayer():getWorld():getBlockAt(players[i]:getPlayer():getLocation():add(0, 0, 0))
-							bed:setType(material.LIME_BED)
+							util.setBlockType(bed, material.LIME_BED)
 							local bedData = bed:getBlockData()
 							bedData:setPart(import("$.block.data.type.Bed$Part").HEAD)
 							bed:setBlockData(bedData)
 							
 							local bed2 = players[i]:getPlayer():getWorld():getBlockAt(players[i]:getPlayer():getLocation():add(0, 0, 1))
-							bed2:setType(material.LIME_BED)
+							util.setBlockType(bed2, material.LIME_BED)
 							local bed2Data = bed2:getBlockData()
 							bed2Data:setPart(import("$.block.data.type.Bed$Part").FOOT)
 							bed2:setBlockData(bed2Data)
